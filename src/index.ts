@@ -2,7 +2,6 @@ import { promisify } from "util";
 import { NBT, parse, writeUncompressed } from "prismarine-nbt";
 import { gzipSync } from "zlib";
 import { TagType } from "./types/tag-type";
-import { readFile, writeFile } from "fs";
 import extractPalette from "./extractors/palette-and-blockdata";
 import extractDimensions from "./extractors/dimensions";
 import convertPalette from "./converters/convert-palette";
@@ -34,22 +33,5 @@ const schematic2schem = async (file: Buffer): Promise<Buffer> => {
     return gzipSync(Buffer.from(uncompressedSchematic));
   });
 };
-
-/* TEMPORARY, FOR TESTING PURPOSES ONLY */
-readFile("test/test_large.schematic", async (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-
-  try {
-    const schemBuffer = await schematic2schem(data);
-    writeFile("test/out.schem", schemBuffer, (err) => {
-      if (err) console.log(err);
-    });
-  } catch (err) {
-    console.log(err);
-  }
-});
 
 export default schematic2schem;
