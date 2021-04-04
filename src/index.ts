@@ -2,14 +2,17 @@ import { promisify } from "util";
 import { NBT, parse, writeUncompressed } from "prismarine-nbt";
 import { gzipSync } from "zlib";
 import { TagType } from "./types/tag-type";
-import extractPalette from "./extractors/palette-and-blockdata";
+import extractPaletteAndBlockData from "./extractors/palette-and-blockdata";
 import extractDimensions from "./extractors/dimensions";
 import convertPalette from "./converters/convert-palette";
 
-const schematic2schem = async (file: Buffer): Promise<Buffer> => {
+const schematic2schem = async (
+  file: Buffer,
+  fast: boolean = false
+): Promise<Buffer> => {
   return promisify(parse)(file).then((nbt) => {
     const dimensions = extractDimensions(nbt);
-    const convertedSchematic = extractPalette(nbt);
+    const convertedSchematic = extractPaletteAndBlockData(nbt, fast);
     const paletteTag = convertPalette(convertedSchematic.palette);
 
     const schematicTag: NBT = {
