@@ -30,8 +30,6 @@ const schematic2schem = async (file: Buffer): Promise<Buffer> => {
       },
     };
 
-    console.log(schematicTag);
-
     const uncompressedSchematic = writeUncompressed(schematicTag);
     return gzipSync(Buffer.from(uncompressedSchematic));
   });

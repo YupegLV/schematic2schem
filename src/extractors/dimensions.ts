@@ -8,8 +8,6 @@ const extractDimensions = (
   if (!nbt.value["Height"]) throw new Error("NBT is missing 'Height' tag");
   if (!nbt.value["Width"]) throw new Error("NBT is missing 'Width' tag");
 
-  console.log(nbt);
-
   const length: number = (nbt.value["Length"] as Tags[TagType.Short]).value;
   const height: number = (nbt.value["Height"] as Tags[TagType.Short]).value;
   const width: number = (nbt.value["Width"] as Tags[TagType.Short]).value;

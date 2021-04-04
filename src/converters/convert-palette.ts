@@ -6,7 +6,6 @@ const convertPalette = (
 ): Tags[TagType.Compound] => {
   const blockStates = Object.keys(palette).reduce((acc, blockState) => {
     acc[blockState] = { type: TagType.Int, value: palette[blockState] };
-    console.log(blockState);
     return acc;
   }, {});
 
