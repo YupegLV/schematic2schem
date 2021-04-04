@@ -15,6 +15,9 @@
     "schematic",
     "schematic2schem"
   ],
+  "files": [
+    "dist"
+  ],
   "author": "McJeffr",
   "license": "MIT",
   "devDependencies": {
