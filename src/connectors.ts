@@ -1,4 +1,4 @@
-const blocks = [
+export const blocks = [
   1,
   2,
   3,
@@ -97,12 +97,30 @@ const blocks = [
   252,
 ];
 
+export const stairs = [
+  53,
+  67,
+  108,
+  109,
+  114,
+  128,
+  134,
+  135,
+  136,
+  156,
+  163,
+  164,
+  180,
+  203,
+];
+
 export default {
-  101: [...blocks, 101],
-  102: [...blocks, 102, 160],
-  160: [...blocks, 102, 160],
+  101: [...blocks, ...stairs, 101],
+  102: [...blocks, ...stairs, 102, 160],
+  160: [...blocks, ...stairs, 102, 160],
   85: [
     ...blocks,
+    ...stairs,
     85,
     113,
     107,
@@ -119,6 +137,7 @@ export default {
   ],
   113: [
     ...blocks,
+    ...stairs,
     85,
     113,
     107,
@@ -135,6 +154,7 @@ export default {
   ],
   188: [
     ...blocks,
+    ...stairs,
     85,
     113,
     107,
@@ -151,6 +171,7 @@ export default {
   ],
   189: [
     ...blocks,
+    ...stairs,
     85,
     113,
     107,
@@ -167,6 +188,7 @@ export default {
   ],
   190: [
     ...blocks,
+    ...stairs,
     85,
     113,
     107,
@@ -183,6 +205,7 @@ export default {
   ],
   191: [
     ...blocks,
+    ...stairs,
     85,
     113,
     107,
@@ -199,6 +222,7 @@ export default {
   ],
   192: [
     ...blocks,
+    ...stairs,
     85,
     113,
     107,
@@ -213,5 +237,5 @@ export default {
     191,
     192,
   ],
-  139: [...blocks, 139],
+  139: [...blocks, ...stairs, 139],
 };

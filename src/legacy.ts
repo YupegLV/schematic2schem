@@ -359,21 +359,21 @@ export default {
       "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=15]",
     "52:0": "minecraft:spawner",
     "53:0":
-      "minecraft:oak_stairs[half=bottom,shape=outer_right,facing=east,waterlogged=false]",
+      "minecraft:oak_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
     "53:1":
-      "minecraft:oak_stairs[half=bottom,shape=outer_right,facing=west,waterlogged=false]",
+      "minecraft:oak_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
     "53:2":
-      "minecraft:oak_stairs[half=bottom,shape=outer_right,facing=south,waterlogged=false]",
+      "minecraft:oak_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
     "53:3":
-      "minecraft:oak_stairs[half=bottom,shape=outer_right,facing=north,waterlogged=false]",
+      "minecraft:oak_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
     "53:4":
-      "minecraft:oak_stairs[half=top,shape=outer_right,facing=east,waterlogged=false]",
+      "minecraft:oak_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
     "53:5":
-      "minecraft:oak_stairs[half=top,shape=outer_right,facing=west,waterlogged=false]",
+      "minecraft:oak_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
     "53:6":
-      "minecraft:oak_stairs[half=top,shape=outer_right,facing=south,waterlogged=false]",
+      "minecraft:oak_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
     "53:7":
-      "minecraft:oak_stairs[half=top,shape=outer_right,facing=north,waterlogged=false]",
+      "minecraft:oak_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
     "54:2": "minecraft:chest[facing=north,type=single,waterlogged=false]",
     "54:3": "minecraft:chest[facing=south,type=single,waterlogged=false]",
     "54:4": "minecraft:chest[facing=west,type=single,waterlogged=false]",

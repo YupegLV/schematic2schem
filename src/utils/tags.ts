@@ -1,6 +1,14 @@
-export const deconstructTag = (
-  tag: string
-): { tag: string; state: Record<string, string> } => {
+export interface Tag {
+  tag: string;
+  state: Record<string, string>;
+}
+
+/**
+ * Deconstructs a stringual tag into a tag object.
+ * @param tag The stringual tag.
+ * @returns The tag object.
+ */
+export const deconstructTag = (tag: string): Tag => {
   if (!tag.includes("[")) {
     return { tag, state: {} };
   }
@@ -21,10 +29,12 @@ export const deconstructTag = (
   };
 };
 
-export const constructTag = (tag: {
-  tag: string;
-  state: Record<string, string>;
-}): string => {
+/**
+ * Constructs a stringual tag from a tag object.
+ * @param tag The tag object.
+ * @returns The stringual tag.
+ */
+export const constructTag = (tag: Tag): string => {
   const blockState = Object.keys(tag.state).map((blockState) => {
     return `${blockState}=${tag.state[blockState]}`;
   });

@@ -1,7 +1,7 @@
 import { NBT, Tags } from "prismarine-nbt";
 import { TagType } from "../types/tag-type";
 import mapping from "../legacy";
-import connectors from "../connectors";
+import connectors, { stairs } from "../connectors";
 import extractDimensions from "./dimensions";
 import { constructTag, deconstructTag } from "../utils/tags";
 
@@ -31,7 +31,7 @@ const extractPaletteAndBlockData = (
     const idAndData = getIdAndData(idx, blocks, data)!;
     const tag = fast
       ? mapping.blocks[`${idAndData.id}:${idAndData.data}`]
-      : fixBlockData(idAndData.id, idAndData.data, idx, nbt);
+      : fixBlockState(idAndData.id, idAndData.data, idx, nbt);
 
     if (typeof palette[tag] === "undefined") {
       palette[tag] = paletteIdx;
@@ -43,21 +43,57 @@ const extractPaletteAndBlockData = (
   return { palette, blockData };
 };
 
-const fixBlockData = (id: number, data: number, idx: number, nbt: NBT) => {
+const fixBlockState = (id: number, data: number, idx: number, nbt: NBT) => {
   if (connectors[id]) {
     const surrounding = getSurrounding(idx, nbt);
     const tag = deconstructTag(mapping.blocks[`${id}:${data}`]);
     if (surrounding.north && connectors[id].includes(surrounding.north.id)) {
-      tag.state["north"] = "true";
+      if (stairs.includes(surrounding.north.id)) {
+        const stairTag = deconstructTag(
+          mapping.blocks[`${surrounding.north.id}:${surrounding.north.data}`]
+        );
+        if (stairTag.state["facing"] == "south") {
+          tag.state["north"] = "true";
+        }
+      } else {
+        tag.state["north"] = "true";
+      }
     }
     if (surrounding.east && connectors[id].includes(surrounding.east.id)) {
-      tag.state["east"] = "true";
+      if (stairs.includes(surrounding.east.id)) {
+        const stairTag = deconstructTag(
+          mapping.blocks[`${surrounding.east.id}:${surrounding.east.data}`]
+        );
+        if (stairTag.state["facing"] == "west") {
+          tag.state["east"] = "true";
+        }
+      } else {
+        tag.state["east"] = "true";
+      }
     }
     if (surrounding.south && connectors[id].includes(surrounding.south.id)) {
-      tag.state["south"] = "true";
+      if (stairs.includes(surrounding.south.id)) {
+        const stairTag = deconstructTag(
+          mapping.blocks[`${surrounding.south.id}:${surrounding.south.data}`]
+        );
+        if (stairTag.state["facing"] == "north") {
+          tag.state["south"] = "true";
+        }
+      } else {
+        tag.state["south"] = "true";
+      }
     }
     if (surrounding.west && connectors[id].includes(surrounding.west.id)) {
-      tag.state["west"] = "true";
+      if (stairs.includes(surrounding.west.id)) {
+        const stairTag = deconstructTag(
+          mapping.blocks[`${surrounding.west.id}:${surrounding.west.data}`]
+        );
+        if (stairTag.state["facing"] == "east") {
+          tag.state["west"] = "true";
+        }
+      } else {
+        tag.state["west"] = "true";
+      }
     }
 
     return constructTag(tag);

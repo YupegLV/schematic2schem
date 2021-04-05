@@ -6,7 +6,7 @@ Below is a simple example of how this library can be used.
 ```typescript
 import schematic2schem from "schematic2schem";
 
-schematic2schem(structBuffer)
+schematic2schem(schematicBuffer)
   .then((schemBuffer) => {
     // Do something with the schem buffer, e.g. write it to a file.
   })
@@ -34,6 +34,12 @@ readFile("test/test_large.schematic", async (err, data) => {
   }
 });
 ```
+
+## Features
+This library comes with the following features:
+- Converts MCEdit schematics (1.12 and below) to Sponge schematics (1.13 and higher)
+- Correctly fixes the block state of fences, iron bars, glass panes and walls so that they are connected to compatible neighbouring blocks
+- **Not yet implemented** Correctly fixes stair shape when stairs connect to neighbouring stairs
 
 ## Promises
 This package uses promises, as processing a schematic might take a bit of time. To not freeze the main thread, this operation can be done in the background. See the second example on how to use this 
