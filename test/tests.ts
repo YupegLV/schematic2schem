@@ -7,7 +7,7 @@ import schematic2schem from "../src/index";
 
 describe("Test converter", () => {
   it("can convert schematic to schem", async () => {
-    const schematicBuffer: Buffer = await readFile("./test/test_large.schematic");
+    const schematicBuffer: Buffer = await readFile("./test/crane.schematic");
     const schemBuffer: Buffer = await schematic2schem(schematicBuffer);
     const parsedSchem: NBT = await promisify(parse)(schemBuffer);
 
@@ -56,7 +56,7 @@ describe("Test converter", () => {
     paletteTag = paletteTag as Tags[TagType.Compound];
     expect(paletteTag.type).to.equal(TagType.Compound);
 
-    expect(Object.keys(paletteTag.value).length).to.equal(31);
+    expect(Object.keys(paletteTag.value).length).to.equal(43);
 
     /* Check for BlockData */
     let blockDataTag = parsedSchem.value["BlockData"];
