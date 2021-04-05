@@ -56,7 +56,7 @@ describe("Test converter", () => {
     paletteTag = paletteTag as Tags[TagType.Compound];
     expect(paletteTag.type).to.equal(TagType.Compound);
 
-    expect(Object.keys(paletteTag.value).length).to.equal(43);
+    expect(Object.keys(paletteTag.value).length).to.equal(47);
 
     /* Check for BlockData */
     let blockDataTag = parsedSchem.value["BlockData"];

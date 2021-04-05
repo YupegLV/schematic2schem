@@ -3,6 +3,11 @@ export interface Tag {
   state: Record<string, string>;
 }
 
+export interface LegacyBlock {
+  id: number;
+  data: number;
+}
+
 /**
  * Deconstructs a stringual tag into a tag object.
  * @param tag The stringual tag.
@@ -39,4 +44,22 @@ export const constructTag = (tag: Tag): string => {
     return `${blockState}=${tag.state[blockState]}`;
   });
   return `${tag.tag}[${blockState.join(",")}]`;
+};
+
+/**
+ * Gets the ID and data from the block at the provided index.
+ * @param idx The index of the block to fetch the ID and data for.
+ * @param id The ID of the block at the provided index.
+ * @param data The data of the block at the provided index.
+ * @returns
+ */
+export const getIdAndData = (
+  idx: number | null,
+  id: number[],
+  data: number[]
+): LegacyBlock | null => {
+  if (idx === null) {
+    return null;
+  }
+  return { id: id[idx] < 0 ? 256 + id[idx] : id[idx], data: data[idx] };
 };

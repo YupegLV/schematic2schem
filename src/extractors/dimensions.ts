@@ -1,9 +1,13 @@
 import { NBT, Tags } from "prismarine-nbt";
 import { TagType } from "../types/tag-type";
 
-const extractDimensions = (
-  nbt: NBT
-): { width: number; height: number; length: number } => {
+export interface Dimensions {
+  length: number;
+  width: number;
+  height: number;
+}
+
+const extractDimensions = (nbt: NBT): Dimensions => {
   if (!nbt.value["Length"]) throw new Error("NBT is missing 'Length' tag");
   if (!nbt.value["Height"]) throw new Error("NBT is missing 'Height' tag");
   if (!nbt.value["Width"]) throw new Error("NBT is missing 'Width' tag");
