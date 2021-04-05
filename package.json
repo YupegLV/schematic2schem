@@ -1,6 +1,6 @@
 {
   "name": "schematic2schem",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Converts .schematic files (< 1.13) to .schem files (1.13+)",
   "main": "dist/index.js",
   "scripts": {
