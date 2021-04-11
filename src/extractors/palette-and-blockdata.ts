@@ -36,9 +36,13 @@ const extractPaletteAndBlockData = (
   const blockData: number[] = [];
   blocks.forEach((_, idx) => {
     const idAndData = getIdAndData(idx, blocks, data)!;
-    const tag = fast
+    let tag = fast
       ? mapping.blocks[`${idAndData.id}:${idAndData.data}`]
       : fixBlockState({ id: idAndData.id, data: idAndData.data }, idx, nbt);
+
+    if (!tag) {
+      tag = "minecraft:air";
+    }
 
     if (typeof palette[tag] === "undefined") {
       palette[tag] = paletteIdx;
