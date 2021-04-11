@@ -11,7 +11,6 @@ export const blocks = [
   15,
   16,
   17,
-  18,
   19,
   21,
   22,
