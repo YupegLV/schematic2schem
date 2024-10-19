@@ -1,6 +1,6 @@
 import typescript from "rollup-plugin-typescript2";
-import resolve from "rollup-plugin-node-resolve";
-import commonjs from "rollup-plugin-commonjs";
+import resolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 
 import pkg from "./package.json";
@@ -18,9 +18,13 @@ export default {
   ],
   plugins: [
     json(),
-    resolve({ jsnext: true, main: true, browser: true }),
+    resolve({ browser: true }),
     commonjs(),
-    typescript({ objectHashIgnoreUnknownHack: true }),
+    typescript({
+      tsconfig: "tsconfig.json",
+      useTsconfigDeclarationDir: true,
+      tslib: require.resolve("tslib/tslib.es6.js"), // 确保使用正确的 tslib 路径
+    }),
   ],
   external: ["fs", "zlib", "util", "prismarine-nbt"],
 };

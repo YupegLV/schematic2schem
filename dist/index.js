@@ -1,8 +1,66 @@
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var util = require('util');
+var prismarineNbt = require('prismarine-nbt');
+var zlib = require('zlib');
+
+/******************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+
+function __awaiter(thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+}
+
+typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+    var e = new Error(message);
+    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
+
+/**
+ * This enum is by prismarine-nbt. However, due to an incorrect
+ * configuration of prismarine-nbt's TypeScript types, importing
+ * it from there would not work. Instead, we have copied it over
+ * to our own project.
+ */
+var TagType;
+(function (TagType) {
+    TagType["Byte"] = "byte";
+    TagType["Short"] = "short";
+    TagType["Int"] = "int";
+    TagType["Long"] = "long";
+    TagType["Float"] = "float";
+    TagType["Double"] = "double";
+    TagType["ByteArray"] = "byteArray";
+    TagType["String"] = "string";
+    TagType["List"] = "list";
+    TagType["Compound"] = "compound";
+    TagType["IntArray"] = "intArray";
+    TagType["LongArray"] = "longArray";
+})(TagType || (TagType = {}));
+
 /**
  * Legacy mapping provided by WorldEdit:
  * https://github.com/EngineHub/WorldEdit
  */
-export default {
+var mapping = {
     blocks: {
         "0:0": "minecraft:air",
         "1:0": "minecraft:stone",
@@ -335,18 +393,12 @@ export default {
         "51:7": "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=7]",
         "51:8": "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=8]",
         "51:9": "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=9]",
-        "51:10":
-            "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=10]",
-        "51:11":
-            "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=11]",
-        "51:12":
-            "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=12]",
-        "51:13":
-            "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=13]",
-        "51:14":
-            "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=14]",
-        "51:15":
-            "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=15]",
+        "51:10": "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=10]",
+        "51:11": "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=11]",
+        "51:12": "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=12]",
+        "51:13": "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=13]",
+        "51:14": "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=14]",
+        "51:15": "minecraft:fire[east=false,south=false,north=false,west=false,up=false,age=15]",
         "52:0": "minecraft:spawner",
         "53:0": "minecraft:oak_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
         "53:1": "minecraft:oak_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
@@ -370,18 +422,12 @@ export default {
         "55:7": "minecraft:redstone_wire[east=none,south=none,north=none,west=none,power=7]",
         "55:8": "minecraft:redstone_wire[east=none,south=none,north=none,west=none,power=8]",
         "55:9": "minecraft:redstone_wire[east=none,south=none,north=none,west=none,power=9]",
-        "55:10":
-            "minecraft:redstone_wire[east=none,south=none,north=none,west=none,power=10]",
-        "55:11":
-            "minecraft:redstone_wire[east=none,south=none,north=none,west=none,power=11]",
-        "55:12":
-            "minecraft:redstone_wire[east=none,south=none,north=none,west=none,power=12]",
-        "55:13":
-            "minecraft:redstone_wire[east=none,south=none,north=none,west=none,power=13]",
-        "55:14":
-            "minecraft:redstone_wire[east=none,south=none,north=none,west=none,power=14]",
-        "55:15":
-            "minecraft:redstone_wire[east=none,south=none,north=none,west=none,power=15]",
+        "55:10": "minecraft:redstone_wire[east=none,south=none,north=none,west=none,power=10]",
+        "55:11": "minecraft:redstone_wire[east=none,south=none,north=none,west=none,power=11]",
+        "55:12": "minecraft:redstone_wire[east=none,south=none,north=none,west=none,power=12]",
+        "55:13": "minecraft:redstone_wire[east=none,south=none,north=none,west=none,power=13]",
+        "55:14": "minecraft:redstone_wire[east=none,south=none,north=none,west=none,power=14]",
+        "55:15": "minecraft:redstone_wire[east=none,south=none,north=none,west=none,power=15]",
         "56:0": "minecraft:diamond_ore",
         "57:0": "minecraft:diamond_block",
         "58:0": "minecraft:crafting_table",
@@ -435,10 +481,8 @@ export default {
         "64:7": "minecraft:oak_door[hinge=right,half=lower,powered=false,facing=north,open=true]",
         "64:8": "minecraft:oak_door[hinge=left,half=upper,powered=false,facing=east,open=false]",
         "64:9": "minecraft:oak_door[hinge=right,half=upper,powered=false,facing=east,open=false]",
-        "64:10":
-            "minecraft:oak_door[hinge=left,half=upper,powered=true,facing=east,open=false]",
-        "64:11":
-            "minecraft:oak_door[hinge=right,half=upper,powered=true,facing=east,open=false]",
+        "64:10": "minecraft:oak_door[hinge=left,half=upper,powered=true,facing=east,open=false]",
+        "64:11": "minecraft:oak_door[hinge=right,half=upper,powered=true,facing=east,open=false]",
         "65:2": "minecraft:ladder[facing=north,waterlogged=false]",
         "65:3": "minecraft:ladder[facing=south,waterlogged=false]",
         "65:4": "minecraft:ladder[facing=west,waterlogged=false]",
@@ -493,10 +537,8 @@ export default {
         "71:7": "minecraft:iron_door[hinge=right,half=lower,powered=false,facing=north,open=true]",
         "71:8": "minecraft:iron_door[hinge=left,half=upper,powered=false,facing=east,open=false]",
         "71:9": "minecraft:iron_door[hinge=right,half=upper,powered=false,facing=east,open=false]",
-        "71:10":
-            "minecraft:iron_door[hinge=left,half=upper,powered=true,facing=east,open=false]",
-        "71:11":
-            "minecraft:iron_door[hinge=right,half=upper,powered=true,facing=east,open=false]",
+        "71:10": "minecraft:iron_door[hinge=left,half=upper,powered=true,facing=east,open=false]",
+        "71:11": "minecraft:iron_door[hinge=right,half=upper,powered=true,facing=east,open=false]",
         "72:0": "minecraft:oak_pressure_plate[powered=false]",
         "72:1": "minecraft:oak_pressure_plate[powered=true]",
         "73:0": "minecraft:redstone_ore[lit=false]",
@@ -599,18 +641,12 @@ export default {
         "93:7": "minecraft:repeater[delay=2,facing=east,locked=false,powered=false]",
         "93:8": "minecraft:repeater[delay=3,facing=south,locked=false,powered=false]",
         "93:9": "minecraft:repeater[delay=3,facing=west,locked=false,powered=false]",
-        "93:10":
-            "minecraft:repeater[delay=3,facing=north,locked=false,powered=false]",
-        "93:11":
-            "minecraft:repeater[delay=3,facing=east,locked=false,powered=false]",
-        "93:12":
-            "minecraft:repeater[delay=4,facing=south,locked=false,powered=false]",
-        "93:13":
-            "minecraft:repeater[delay=4,facing=west,locked=false,powered=false]",
-        "93:14":
-            "minecraft:repeater[delay=4,facing=north,locked=false,powered=false]",
-        "93:15":
-            "minecraft:repeater[delay=4,facing=east,locked=false,powered=false]",
+        "93:10": "minecraft:repeater[delay=3,facing=north,locked=false,powered=false]",
+        "93:11": "minecraft:repeater[delay=3,facing=east,locked=false,powered=false]",
+        "93:12": "minecraft:repeater[delay=4,facing=south,locked=false,powered=false]",
+        "93:13": "minecraft:repeater[delay=4,facing=west,locked=false,powered=false]",
+        "93:14": "minecraft:repeater[delay=4,facing=north,locked=false,powered=false]",
+        "93:15": "minecraft:repeater[delay=4,facing=east,locked=false,powered=false]",
         "94:0": "minecraft:repeater[delay=1,facing=south,locked=false,powered=true]",
         "94:1": "minecraft:repeater[delay=1,facing=west,locked=false,powered=true]",
         "94:2": "minecraft:repeater[delay=1,facing=north,locked=false,powered=true]",
@@ -621,18 +657,12 @@ export default {
         "94:7": "minecraft:repeater[delay=2,facing=east,locked=false,powered=true]",
         "94:8": "minecraft:repeater[delay=3,facing=south,locked=false,powered=true]",
         "94:9": "minecraft:repeater[delay=3,facing=west,locked=false,powered=true]",
-        "94:10":
-            "minecraft:repeater[delay=3,facing=north,locked=false,powered=true]",
-        "94:11":
-            "minecraft:repeater[delay=3,facing=east,locked=false,powered=true]",
-        "94:12":
-            "minecraft:repeater[delay=4,facing=south,locked=false,powered=true]",
-        "94:13":
-            "minecraft:repeater[delay=4,facing=west,locked=false,powered=true]",
-        "94:14":
-            "minecraft:repeater[delay=4,facing=north,locked=false,powered=true]",
-        "94:15":
-            "minecraft:repeater[delay=4,facing=east,locked=false,powered=true]",
+        "94:10": "minecraft:repeater[delay=3,facing=north,locked=false,powered=true]",
+        "94:11": "minecraft:repeater[delay=3,facing=east,locked=false,powered=true]",
+        "94:12": "minecraft:repeater[delay=4,facing=south,locked=false,powered=true]",
+        "94:13": "minecraft:repeater[delay=4,facing=west,locked=false,powered=true]",
+        "94:14": "minecraft:repeater[delay=4,facing=north,locked=false,powered=true]",
+        "94:15": "minecraft:repeater[delay=4,facing=east,locked=false,powered=true]",
         "95:0": "minecraft:white_stained_glass",
         "95:1": "minecraft:orange_stained_glass",
         "95:2": "minecraft:magenta_stained_glass",
@@ -659,18 +689,12 @@ export default {
         "96:7": "minecraft:oak_trapdoor[half=bottom,facing=east,open=true,powered=true,waterlogged=false]",
         "96:8": "minecraft:oak_trapdoor[half=top,facing=north,open=false,powered=false,waterlogged=false]",
         "96:9": "minecraft:oak_trapdoor[half=top,facing=south,open=false,powered=false,waterlogged=false]",
-        "96:10":
-            "minecraft:oak_trapdoor[half=top,facing=west,open=false,powered=false,waterlogged=false]",
-        "96:11":
-            "minecraft:oak_trapdoor[half=top,facing=east,open=false,powered=false,waterlogged=false]",
-        "96:12":
-            "minecraft:oak_trapdoor[half=top,facing=north,open=true,powered=true,waterlogged=false]",
-        "96:13":
-            "minecraft:oak_trapdoor[half=top,facing=south,open=true,powered=true,waterlogged=false]",
-        "96:14":
-            "minecraft:oak_trapdoor[half=top,facing=west,open=true,powered=true,waterlogged=false]",
-        "96:15":
-            "minecraft:oak_trapdoor[half=top,facing=east,open=true,powered=true,waterlogged=false]",
+        "96:10": "minecraft:oak_trapdoor[half=top,facing=west,open=false,powered=false,waterlogged=false]",
+        "96:11": "minecraft:oak_trapdoor[half=top,facing=east,open=false,powered=false,waterlogged=false]",
+        "96:12": "minecraft:oak_trapdoor[half=top,facing=north,open=true,powered=true,waterlogged=false]",
+        "96:13": "minecraft:oak_trapdoor[half=top,facing=south,open=true,powered=true,waterlogged=false]",
+        "96:14": "minecraft:oak_trapdoor[half=top,facing=west,open=true,powered=true,waterlogged=false]",
+        "96:15": "minecraft:oak_trapdoor[half=top,facing=east,open=true,powered=true,waterlogged=false]",
         "97:0": "minecraft:infested_stone",
         "97:1": "minecraft:infested_cobblestone",
         "97:2": "minecraft:infested_stone_bricks",
@@ -691,42 +715,24 @@ export default {
         "99:7": "minecraft:brown_mushroom_block[north=false,east=false,south=true,west=true,up=true,down=false]",
         "99:8": "minecraft:brown_mushroom_block[north=false,east=false,south=true,west=false,up=true,down=false]",
         "99:9": "minecraft:brown_mushroom_block[north=false,east=true,south=true,west=false,up=true,down=false]",
-        "99:10":
-            "minecraft:mushroom_stem[north=true,east=true,south=true,west=true,up=false,down=false]",
-        "99:14":
-            "minecraft:brown_mushroom_block[north=true,east=true,south=true,west=true,up=true,down=true]",
-        "99:15":
-            "minecraft:mushroom_stem[north=true,east=true,south=true,west=true,up=true,down=true]",
-        "100:0":
-            "minecraft:red_mushroom_block[north=false,east=false,south=false,west=false,up=false,down=false]",
-        "100:1":
-            "minecraft:red_mushroom_block[north=true,east=false,south=false,west=true,up=true,down=false]",
-        "100:2":
-            "minecraft:red_mushroom_block[north=true,east=false,south=false,west=false,up=true,down=false]",
-        "100:3":
-            "minecraft:red_mushroom_block[north=true,east=true,south=false,west=false,up=true,down=false]",
-        "100:4":
-            "minecraft:red_mushroom_block[north=false,east=false,south=false,west=true,up=true,down=false]",
-        "100:5":
-            "minecraft:red_mushroom_block[north=false,east=false,south=false,west=false,up=true,down=false]",
-        "100:6":
-            "minecraft:red_mushroom_block[north=false,east=true,south=false,west=false,up=true,down=false]",
-        "100:7":
-            "minecraft:red_mushroom_block[north=false,east=false,south=true,west=true,up=true,down=false]",
-        "100:8":
-            "minecraft:red_mushroom_block[north=false,east=false,south=true,west=false,up=true,down=false]",
-        "100:9":
-            "minecraft:red_mushroom_block[north=false,east=true,south=true,west=false,up=true,down=false]",
-        "100:10":
-            "minecraft:mushroom_stem[north=true,east=true,south=true,west=true,up=false,down=false]",
-        "100:14":
-            "minecraft:red_mushroom_block[north=true,east=true,south=true,west=true,up=true,down=true]",
-        "100:15":
-            "minecraft:mushroom_stem[north=true,east=true,south=true,west=true,up=true,down=true]",
-        "101:0":
-            "minecraft:iron_bars[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "102:0":
-            "minecraft:glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "99:10": "minecraft:mushroom_stem[north=true,east=true,south=true,west=true,up=false,down=false]",
+        "99:14": "minecraft:brown_mushroom_block[north=true,east=true,south=true,west=true,up=true,down=true]",
+        "99:15": "minecraft:mushroom_stem[north=true,east=true,south=true,west=true,up=true,down=true]",
+        "100:0": "minecraft:red_mushroom_block[north=false,east=false,south=false,west=false,up=false,down=false]",
+        "100:1": "minecraft:red_mushroom_block[north=true,east=false,south=false,west=true,up=true,down=false]",
+        "100:2": "minecraft:red_mushroom_block[north=true,east=false,south=false,west=false,up=true,down=false]",
+        "100:3": "minecraft:red_mushroom_block[north=true,east=true,south=false,west=false,up=true,down=false]",
+        "100:4": "minecraft:red_mushroom_block[north=false,east=false,south=false,west=true,up=true,down=false]",
+        "100:5": "minecraft:red_mushroom_block[north=false,east=false,south=false,west=false,up=true,down=false]",
+        "100:6": "minecraft:red_mushroom_block[north=false,east=true,south=false,west=false,up=true,down=false]",
+        "100:7": "minecraft:red_mushroom_block[north=false,east=false,south=true,west=true,up=true,down=false]",
+        "100:8": "minecraft:red_mushroom_block[north=false,east=false,south=true,west=false,up=true,down=false]",
+        "100:9": "minecraft:red_mushroom_block[north=false,east=true,south=true,west=false,up=true,down=false]",
+        "100:10": "minecraft:mushroom_stem[north=true,east=true,south=true,west=true,up=false,down=false]",
+        "100:14": "minecraft:red_mushroom_block[north=true,east=true,south=true,west=true,up=true,down=true]",
+        "100:15": "minecraft:mushroom_stem[north=true,east=true,south=true,west=true,up=true,down=true]",
+        "101:0": "minecraft:iron_bars[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "102:0": "minecraft:glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
         "103:0": "minecraft:melon",
         "104:0": "minecraft:pumpkin_stem[age=0]",
         "104:1": "minecraft:pumpkin_stem[age=1]",
@@ -744,144 +750,79 @@ export default {
         "105:5": "minecraft:melon_stem[age=5]",
         "105:6": "minecraft:melon_stem[age=6]",
         "105:7": "minecraft:melon_stem[age=7]",
-        "106:0":
-            "minecraft:vine[east=false,south=false,north=false,west=false,up=false]",
-        "106:1":
-            "minecraft:vine[east=false,south=true,north=false,west=false,up=false]",
-        "106:2":
-            "minecraft:vine[east=false,south=false,north=false,west=true,up=false]",
-        "106:3":
-            "minecraft:vine[east=false,south=true,north=false,west=true,up=false]",
-        "106:4":
-            "minecraft:vine[east=false,south=false,north=true,west=false,up=false]",
-        "106:5":
-            "minecraft:vine[east=false,south=true,north=true,west=false,up=false]",
-        "106:6":
-            "minecraft:vine[east=false,south=false,north=true,west=true,up=false]",
-        "106:7":
-            "minecraft:vine[east=false,south=true,north=true,west=true,up=false]",
-        "106:8":
-            "minecraft:vine[east=true,south=false,north=false,west=false,up=false]",
-        "106:9":
-            "minecraft:vine[east=true,south=true,north=false,west=false,up=false]",
-        "106:10":
-            "minecraft:vine[east=true,south=false,north=false,west=true,up=false]",
-        "106:11":
-            "minecraft:vine[east=true,south=true,north=false,west=true,up=false]",
-        "106:12":
-            "minecraft:vine[east=true,south=false,north=true,west=false,up=false]",
-        "106:13":
-            "minecraft:vine[east=true,south=true,north=true,west=false,up=false]",
-        "106:14":
-            "minecraft:vine[east=true,south=false,north=true,west=true,up=false]",
-        "106:15":
-            "minecraft:vine[east=true,south=true,north=true,west=true,up=false]",
-        "107:0":
-            "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=south,open=false]",
-        "107:1":
-            "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=west,open=false]",
-        "107:2":
-            "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=north,open=false]",
-        "107:3":
-            "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=east,open=false]",
-        "107:4":
-            "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=south,open=true]",
-        "107:5":
-            "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=west,open=true]",
-        "107:6":
-            "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=north,open=true]",
-        "107:7":
-            "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=east,open=true]",
-        "107:8":
-            "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=south,open=false]",
-        "107:9":
-            "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=west,open=false]",
-        "107:10":
-            "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=north,open=false]",
-        "107:11":
-            "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=east,open=false]",
-        "107:12":
-            "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=south,open=true]",
-        "107:13":
-            "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=west,open=true]",
-        "107:14":
-            "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=north,open=true]",
-        "107:15":
-            "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=east,open=true]",
-        "108:0":
-            "minecraft:brick_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
-        "108:1":
-            "minecraft:brick_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
-        "108:2":
-            "minecraft:brick_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
-        "108:3":
-            "minecraft:brick_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
-        "108:4":
-            "minecraft:brick_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
-        "108:5":
-            "minecraft:brick_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
-        "108:6":
-            "minecraft:brick_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
-        "108:7":
-            "minecraft:brick_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
-        "109:0":
-            "minecraft:stone_brick_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
-        "109:1":
-            "minecraft:stone_brick_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
-        "109:2":
-            "minecraft:stone_brick_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
-        "109:3":
-            "minecraft:stone_brick_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
-        "109:4":
-            "minecraft:stone_brick_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
-        "109:5":
-            "minecraft:stone_brick_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
-        "109:6":
-            "minecraft:stone_brick_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
-        "109:7":
-            "minecraft:stone_brick_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
+        "106:0": "minecraft:vine[east=false,south=false,north=false,west=false,up=false]",
+        "106:1": "minecraft:vine[east=false,south=true,north=false,west=false,up=false]",
+        "106:2": "minecraft:vine[east=false,south=false,north=false,west=true,up=false]",
+        "106:3": "minecraft:vine[east=false,south=true,north=false,west=true,up=false]",
+        "106:4": "minecraft:vine[east=false,south=false,north=true,west=false,up=false]",
+        "106:5": "minecraft:vine[east=false,south=true,north=true,west=false,up=false]",
+        "106:6": "minecraft:vine[east=false,south=false,north=true,west=true,up=false]",
+        "106:7": "minecraft:vine[east=false,south=true,north=true,west=true,up=false]",
+        "106:8": "minecraft:vine[east=true,south=false,north=false,west=false,up=false]",
+        "106:9": "minecraft:vine[east=true,south=true,north=false,west=false,up=false]",
+        "106:10": "minecraft:vine[east=true,south=false,north=false,west=true,up=false]",
+        "106:11": "minecraft:vine[east=true,south=true,north=false,west=true,up=false]",
+        "106:12": "minecraft:vine[east=true,south=false,north=true,west=false,up=false]",
+        "106:13": "minecraft:vine[east=true,south=true,north=true,west=false,up=false]",
+        "106:14": "minecraft:vine[east=true,south=false,north=true,west=true,up=false]",
+        "106:15": "minecraft:vine[east=true,south=true,north=true,west=true,up=false]",
+        "107:0": "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=south,open=false]",
+        "107:1": "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=west,open=false]",
+        "107:2": "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=north,open=false]",
+        "107:3": "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=east,open=false]",
+        "107:4": "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=south,open=true]",
+        "107:5": "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=west,open=true]",
+        "107:6": "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=north,open=true]",
+        "107:7": "minecraft:oak_fence_gate[in_wall=false,powered=false,facing=east,open=true]",
+        "107:8": "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=south,open=false]",
+        "107:9": "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=west,open=false]",
+        "107:10": "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=north,open=false]",
+        "107:11": "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=east,open=false]",
+        "107:12": "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=south,open=true]",
+        "107:13": "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=west,open=true]",
+        "107:14": "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=north,open=true]",
+        "107:15": "minecraft:oak_fence_gate[in_wall=false,powered=true,facing=east,open=true]",
+        "108:0": "minecraft:brick_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
+        "108:1": "minecraft:brick_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
+        "108:2": "minecraft:brick_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
+        "108:3": "minecraft:brick_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
+        "108:4": "minecraft:brick_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
+        "108:5": "minecraft:brick_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
+        "108:6": "minecraft:brick_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
+        "108:7": "minecraft:brick_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
+        "109:0": "minecraft:stone_brick_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
+        "109:1": "minecraft:stone_brick_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
+        "109:2": "minecraft:stone_brick_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
+        "109:3": "minecraft:stone_brick_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
+        "109:4": "minecraft:stone_brick_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
+        "109:5": "minecraft:stone_brick_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
+        "109:6": "minecraft:stone_brick_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
+        "109:7": "minecraft:stone_brick_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
         "110:0": "minecraft:mycelium[snowy=false]",
         "111:0": "minecraft:lily_pad",
         "112:0": "minecraft:nether_bricks",
-        "113:0":
-            "minecraft:nether_brick_fence[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "114:0":
-            "minecraft:nether_brick_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
-        "114:1":
-            "minecraft:nether_brick_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
-        "114:2":
-            "minecraft:nether_brick_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
-        "114:3":
-            "minecraft:nether_brick_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
-        "114:4":
-            "minecraft:nether_brick_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
-        "114:5":
-            "minecraft:nether_brick_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
-        "114:6":
-            "minecraft:nether_brick_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
-        "114:7":
-            "minecraft:nether_brick_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
+        "113:0": "minecraft:nether_brick_fence[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "114:0": "minecraft:nether_brick_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
+        "114:1": "minecraft:nether_brick_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
+        "114:2": "minecraft:nether_brick_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
+        "114:3": "minecraft:nether_brick_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
+        "114:4": "minecraft:nether_brick_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
+        "114:5": "minecraft:nether_brick_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
+        "114:6": "minecraft:nether_brick_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
+        "114:7": "minecraft:nether_brick_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
         "115:0": "minecraft:nether_wart[age=0]",
         "115:1": "minecraft:nether_wart[age=1]",
         "115:2": "minecraft:nether_wart[age=2]",
         "115:3": "minecraft:nether_wart[age=3]",
         "116:0": "minecraft:enchanting_table",
-        "117:0":
-            "minecraft:brewing_stand[has_bottle_0=false,has_bottle_1=false,has_bottle_2=false]",
-        "117:1":
-            "minecraft:brewing_stand[has_bottle_0=true,has_bottle_1=false,has_bottle_2=false]",
-        "117:2":
-            "minecraft:brewing_stand[has_bottle_0=false,has_bottle_1=true,has_bottle_2=false]",
-        "117:3":
-            "minecraft:brewing_stand[has_bottle_0=true,has_bottle_1=true,has_bottle_2=false]",
-        "117:4":
-            "minecraft:brewing_stand[has_bottle_0=false,has_bottle_1=false,has_bottle_2=true]",
-        "117:5":
-            "minecraft:brewing_stand[has_bottle_0=true,has_bottle_1=false,has_bottle_2=true]",
-        "117:6":
-            "minecraft:brewing_stand[has_bottle_0=false,has_bottle_1=true,has_bottle_2=true]",
-        "117:7":
-            "minecraft:brewing_stand[has_bottle_0=true,has_bottle_1=true,has_bottle_2=true]",
+        "117:0": "minecraft:brewing_stand[has_bottle_0=false,has_bottle_1=false,has_bottle_2=false]",
+        "117:1": "minecraft:brewing_stand[has_bottle_0=true,has_bottle_1=false,has_bottle_2=false]",
+        "117:2": "minecraft:brewing_stand[has_bottle_0=false,has_bottle_1=true,has_bottle_2=false]",
+        "117:3": "minecraft:brewing_stand[has_bottle_0=true,has_bottle_1=true,has_bottle_2=false]",
+        "117:4": "minecraft:brewing_stand[has_bottle_0=false,has_bottle_1=false,has_bottle_2=true]",
+        "117:5": "minecraft:brewing_stand[has_bottle_0=true,has_bottle_1=false,has_bottle_2=true]",
+        "117:6": "minecraft:brewing_stand[has_bottle_0=false,has_bottle_1=true,has_bottle_2=true]",
+        "117:7": "minecraft:brewing_stand[has_bottle_0=true,has_bottle_1=true,has_bottle_2=true]",
         "118:0": "minecraft:cauldron[level=0]",
         "118:1": "minecraft:cauldron[level=1]",
         "118:2": "minecraft:cauldron[level=2]",
@@ -929,124 +870,68 @@ export default {
         "127:9": "minecraft:cocoa[facing=west,age=2]",
         "127:10": "minecraft:cocoa[facing=north,age=2]",
         "127:11": "minecraft:cocoa[facing=east,age=2]",
-        "128:0":
-            "minecraft:sandstone_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
-        "128:1":
-            "minecraft:sandstone_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
-        "128:2":
-            "minecraft:sandstone_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
-        "128:3":
-            "minecraft:sandstone_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
-        "128:4":
-            "minecraft:sandstone_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
-        "128:5":
-            "minecraft:sandstone_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
-        "128:6":
-            "minecraft:sandstone_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
-        "128:7":
-            "minecraft:sandstone_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
+        "128:0": "minecraft:sandstone_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
+        "128:1": "minecraft:sandstone_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
+        "128:2": "minecraft:sandstone_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
+        "128:3": "minecraft:sandstone_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
+        "128:4": "minecraft:sandstone_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
+        "128:5": "minecraft:sandstone_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
+        "128:6": "minecraft:sandstone_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
+        "128:7": "minecraft:sandstone_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
         "129:0": "minecraft:emerald_ore",
         "130:2": "minecraft:ender_chest[facing=north,waterlogged=false]",
         "130:3": "minecraft:ender_chest[facing=south,waterlogged=false]",
         "130:4": "minecraft:ender_chest[facing=west,waterlogged=false]",
         "130:5": "minecraft:ender_chest[facing=east,waterlogged=false]",
-        "131:0":
-            "minecraft:tripwire_hook[powered=false,attached=false,facing=south]",
-        "131:1":
-            "minecraft:tripwire_hook[powered=false,attached=false,facing=west]",
-        "131:2":
-            "minecraft:tripwire_hook[powered=false,attached=false,facing=north]",
-        "131:3":
-            "minecraft:tripwire_hook[powered=false,attached=false,facing=east]",
-        "131:4":
-            "minecraft:tripwire_hook[powered=false,attached=true,facing=south]",
-        "131:5":
-            "minecraft:tripwire_hook[powered=false,attached=true,facing=west]",
-        "131:6":
-            "minecraft:tripwire_hook[powered=false,attached=true,facing=north]",
-        "131:7":
-            "minecraft:tripwire_hook[powered=false,attached=true,facing=east]",
-        "131:8":
-            "minecraft:tripwire_hook[powered=true,attached=false,facing=south]",
-        "131:9":
-            "minecraft:tripwire_hook[powered=true,attached=false,facing=west]",
-        "131:10":
-            "minecraft:tripwire_hook[powered=true,attached=false,facing=north]",
-        "131:11":
-            "minecraft:tripwire_hook[powered=true,attached=false,facing=east]",
-        "131:12":
-            "minecraft:tripwire_hook[powered=true,attached=true,facing=south]",
-        "131:13":
-            "minecraft:tripwire_hook[powered=true,attached=true,facing=west]",
-        "131:14":
-            "minecraft:tripwire_hook[powered=true,attached=true,facing=north]",
-        "131:15":
-            "minecraft:tripwire_hook[powered=true,attached=true,facing=east]",
-        "132:0":
-            "minecraft:tripwire[disarmed=false,east=false,powered=false,south=false,north=false,west=false,attached=false]",
-        "132:1":
-            "minecraft:tripwire[disarmed=false,east=false,powered=true,south=false,north=false,west=false,attached=false]",
-        "132:4":
-            "minecraft:tripwire[disarmed=false,east=false,powered=false,south=false,north=false,west=false,attached=true]",
-        "132:5":
-            "minecraft:tripwire[disarmed=false,east=false,powered=true,south=false,north=false,west=false,attached=true]",
-        "132:8":
-            "minecraft:tripwire[disarmed=true,east=false,powered=false,south=false,north=false,west=false,attached=false]",
-        "132:9":
-            "minecraft:tripwire[disarmed=true,east=false,powered=true,south=false,north=false,west=false,attached=false]",
-        "132:12":
-            "minecraft:tripwire[disarmed=true,east=false,powered=false,south=false,north=false,west=false,attached=true]",
-        "132:13":
-            "minecraft:tripwire[disarmed=true,east=false,powered=true,south=false,north=false,west=false,attached=true]",
+        "131:0": "minecraft:tripwire_hook[powered=false,attached=false,facing=south]",
+        "131:1": "minecraft:tripwire_hook[powered=false,attached=false,facing=west]",
+        "131:2": "minecraft:tripwire_hook[powered=false,attached=false,facing=north]",
+        "131:3": "minecraft:tripwire_hook[powered=false,attached=false,facing=east]",
+        "131:4": "minecraft:tripwire_hook[powered=false,attached=true,facing=south]",
+        "131:5": "minecraft:tripwire_hook[powered=false,attached=true,facing=west]",
+        "131:6": "minecraft:tripwire_hook[powered=false,attached=true,facing=north]",
+        "131:7": "minecraft:tripwire_hook[powered=false,attached=true,facing=east]",
+        "131:8": "minecraft:tripwire_hook[powered=true,attached=false,facing=south]",
+        "131:9": "minecraft:tripwire_hook[powered=true,attached=false,facing=west]",
+        "131:10": "minecraft:tripwire_hook[powered=true,attached=false,facing=north]",
+        "131:11": "minecraft:tripwire_hook[powered=true,attached=false,facing=east]",
+        "131:12": "minecraft:tripwire_hook[powered=true,attached=true,facing=south]",
+        "131:13": "minecraft:tripwire_hook[powered=true,attached=true,facing=west]",
+        "131:14": "minecraft:tripwire_hook[powered=true,attached=true,facing=north]",
+        "131:15": "minecraft:tripwire_hook[powered=true,attached=true,facing=east]",
+        "132:0": "minecraft:tripwire[disarmed=false,east=false,powered=false,south=false,north=false,west=false,attached=false]",
+        "132:1": "minecraft:tripwire[disarmed=false,east=false,powered=true,south=false,north=false,west=false,attached=false]",
+        "132:4": "minecraft:tripwire[disarmed=false,east=false,powered=false,south=false,north=false,west=false,attached=true]",
+        "132:5": "minecraft:tripwire[disarmed=false,east=false,powered=true,south=false,north=false,west=false,attached=true]",
+        "132:8": "minecraft:tripwire[disarmed=true,east=false,powered=false,south=false,north=false,west=false,attached=false]",
+        "132:9": "minecraft:tripwire[disarmed=true,east=false,powered=true,south=false,north=false,west=false,attached=false]",
+        "132:12": "minecraft:tripwire[disarmed=true,east=false,powered=false,south=false,north=false,west=false,attached=true]",
+        "132:13": "minecraft:tripwire[disarmed=true,east=false,powered=true,south=false,north=false,west=false,attached=true]",
         "133:0": "minecraft:emerald_block",
-        "134:0":
-            "minecraft:spruce_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
-        "134:1":
-            "minecraft:spruce_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
-        "134:2":
-            "minecraft:spruce_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
-        "134:3":
-            "minecraft:spruce_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
-        "134:4":
-            "minecraft:spruce_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
-        "134:5":
-            "minecraft:spruce_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
-        "134:6":
-            "minecraft:spruce_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
-        "134:7":
-            "minecraft:spruce_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
-        "135:0":
-            "minecraft:birch_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
-        "135:1":
-            "minecraft:birch_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
-        "135:2":
-            "minecraft:birch_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
-        "135:3":
-            "minecraft:birch_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
-        "135:4":
-            "minecraft:birch_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
-        "135:5":
-            "minecraft:birch_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
-        "135:6":
-            "minecraft:birch_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
-        "135:7":
-            "minecraft:birch_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
-        "136:0":
-            "minecraft:jungle_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
-        "136:1":
-            "minecraft:jungle_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
-        "136:2":
-            "minecraft:jungle_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
-        "136:3":
-            "minecraft:jungle_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
-        "136:4":
-            "minecraft:jungle_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
-        "136:5":
-            "minecraft:jungle_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
-        "136:6":
-            "minecraft:jungle_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
-        "136:7":
-            "minecraft:jungle_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
+        "134:0": "minecraft:spruce_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
+        "134:1": "minecraft:spruce_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
+        "134:2": "minecraft:spruce_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
+        "134:3": "minecraft:spruce_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
+        "134:4": "minecraft:spruce_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
+        "134:5": "minecraft:spruce_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
+        "134:6": "minecraft:spruce_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
+        "134:7": "minecraft:spruce_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
+        "135:0": "minecraft:birch_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
+        "135:1": "minecraft:birch_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
+        "135:2": "minecraft:birch_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
+        "135:3": "minecraft:birch_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
+        "135:4": "minecraft:birch_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
+        "135:5": "minecraft:birch_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
+        "135:6": "minecraft:birch_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
+        "135:7": "minecraft:birch_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
+        "136:0": "minecraft:jungle_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
+        "136:1": "minecraft:jungle_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
+        "136:2": "minecraft:jungle_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
+        "136:3": "minecraft:jungle_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
+        "136:4": "minecraft:jungle_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
+        "136:5": "minecraft:jungle_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
+        "136:6": "minecraft:jungle_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
+        "136:7": "minecraft:jungle_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
         "137:0": "minecraft:command_block[conditional=false,facing=down]",
         "137:1": "minecraft:command_block[conditional=false,facing=up]",
         "137:2": "minecraft:command_block[conditional=false,facing=north]",
@@ -1060,10 +945,8 @@ export default {
         "137:12": "minecraft:command_block[conditional=true,facing=west]",
         "137:13": "minecraft:command_block[conditional=true,facing=east]",
         "138:0": "minecraft:beacon",
-        "139:0":
-            "minecraft:cobblestone_wall[east=false,south=false,north=false,west=false,up=false,waterlogged=false]",
-        "139:1":
-            "minecraft:mossy_cobblestone_wall[east=false,south=false,north=false,west=false,up=false,waterlogged=false]",
+        "139:0": "minecraft:cobblestone_wall[east=false,south=false,north=false,west=false,up=false,waterlogged=false]",
+        "139:1": "minecraft:mossy_cobblestone_wall[east=false,south=false,north=false,west=false,up=false,waterlogged=false]",
         "140:0": "minecraft:flower_pot",
         "140:1": "minecraft:potted_poppy",
         "140:2": "minecraft:potted_dandelion",
@@ -1168,58 +1051,38 @@ export default {
         "148:13": "minecraft:heavy_weighted_pressure_plate[power=13]",
         "148:14": "minecraft:heavy_weighted_pressure_plate[power=14]",
         "148:15": "minecraft:heavy_weighted_pressure_plate[power=15]",
-        "149:0":
-            "minecraft:comparator[mode=compare,powered=false,facing=south]",
+        "149:0": "minecraft:comparator[mode=compare,powered=false,facing=south]",
         "149:1": "minecraft:comparator[mode=compare,powered=false,facing=west]",
-        "149:2":
-            "minecraft:comparator[mode=compare,powered=false,facing=north]",
+        "149:2": "minecraft:comparator[mode=compare,powered=false,facing=north]",
         "149:3": "minecraft:comparator[mode=compare,powered=false,facing=east]",
-        "149:4":
-            "minecraft:comparator[mode=subtract,powered=false,facing=south]",
-        "149:5":
-            "minecraft:comparator[mode=subtract,powered=false,facing=west]",
-        "149:6":
-            "minecraft:comparator[mode=subtract,powered=false,facing=north]",
-        "149:7":
-            "minecraft:comparator[mode=subtract,powered=false,facing=east]",
-        "149:8":
-            "minecraft:comparator[mode=compare,powered=false,facing=south]",
+        "149:4": "minecraft:comparator[mode=subtract,powered=false,facing=south]",
+        "149:5": "minecraft:comparator[mode=subtract,powered=false,facing=west]",
+        "149:6": "minecraft:comparator[mode=subtract,powered=false,facing=north]",
+        "149:7": "minecraft:comparator[mode=subtract,powered=false,facing=east]",
+        "149:8": "minecraft:comparator[mode=compare,powered=false,facing=south]",
         "149:9": "minecraft:comparator[mode=compare,powered=false,facing=west]",
-        "149:10":
-            "minecraft:comparator[mode=compare,powered=false,facing=north]",
-        "149:11":
-            "minecraft:comparator[mode=compare,powered=false,facing=east]",
-        "149:12":
-            "minecraft:comparator[mode=subtract,powered=false,facing=south]",
-        "149:13":
-            "minecraft:comparator[mode=subtract,powered=false,facing=west]",
-        "149:14":
-            "minecraft:comparator[mode=subtract,powered=false,facing=north]",
-        "149:15":
-            "minecraft:comparator[mode=subtract,powered=false,facing=east]",
+        "149:10": "minecraft:comparator[mode=compare,powered=false,facing=north]",
+        "149:11": "minecraft:comparator[mode=compare,powered=false,facing=east]",
+        "149:12": "minecraft:comparator[mode=subtract,powered=false,facing=south]",
+        "149:13": "minecraft:comparator[mode=subtract,powered=false,facing=west]",
+        "149:14": "minecraft:comparator[mode=subtract,powered=false,facing=north]",
+        "149:15": "minecraft:comparator[mode=subtract,powered=false,facing=east]",
         "150:0": "minecraft:comparator[mode=compare,powered=true,facing=south]",
         "150:1": "minecraft:comparator[mode=compare,powered=true,facing=west]",
         "150:2": "minecraft:comparator[mode=compare,powered=true,facing=north]",
         "150:3": "minecraft:comparator[mode=compare,powered=true,facing=east]",
-        "150:4":
-            "minecraft:comparator[mode=subtract,powered=true,facing=south]",
+        "150:4": "minecraft:comparator[mode=subtract,powered=true,facing=south]",
         "150:5": "minecraft:comparator[mode=subtract,powered=true,facing=west]",
-        "150:6":
-            "minecraft:comparator[mode=subtract,powered=true,facing=north]",
+        "150:6": "minecraft:comparator[mode=subtract,powered=true,facing=north]",
         "150:7": "minecraft:comparator[mode=subtract,powered=true,facing=east]",
         "150:8": "minecraft:comparator[mode=compare,powered=true,facing=south]",
         "150:9": "minecraft:comparator[mode=compare,powered=true,facing=west]",
-        "150:10":
-            "minecraft:comparator[mode=compare,powered=true,facing=north]",
+        "150:10": "minecraft:comparator[mode=compare,powered=true,facing=north]",
         "150:11": "minecraft:comparator[mode=compare,powered=true,facing=east]",
-        "150:12":
-            "minecraft:comparator[mode=subtract,powered=true,facing=south]",
-        "150:13":
-            "minecraft:comparator[mode=subtract,powered=true,facing=west]",
-        "150:14":
-            "minecraft:comparator[mode=subtract,powered=true,facing=north]",
-        "150:15":
-            "minecraft:comparator[mode=subtract,powered=true,facing=east]",
+        "150:12": "minecraft:comparator[mode=subtract,powered=true,facing=south]",
+        "150:13": "minecraft:comparator[mode=subtract,powered=true,facing=west]",
+        "150:14": "minecraft:comparator[mode=subtract,powered=true,facing=north]",
+        "150:15": "minecraft:comparator[mode=subtract,powered=true,facing=east]",
         "151:0": "minecraft:daylight_detector[inverted=false,power=0]",
         "151:1": "minecraft:daylight_detector[inverted=false,power=1]",
         "151:2": "minecraft:daylight_detector[inverted=false,power=2]",
@@ -1255,38 +1118,26 @@ export default {
         "155:4": "minecraft:quartz_pillar[axis=z]",
         "155:6": "minecraft:quartz_pillar[axis=x]",
         "155:10": "minecraft:quartz_pillar[axis=z]",
-        "156:0":
-            "minecraft:quartz_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
-        "156:1":
-            "minecraft:quartz_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
-        "156:2":
-            "minecraft:quartz_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
-        "156:3":
-            "minecraft:quartz_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
-        "156:4":
-            "minecraft:quartz_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
-        "156:5":
-            "minecraft:quartz_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
-        "156:6":
-            "minecraft:quartz_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
-        "156:7":
-            "minecraft:quartz_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
+        "156:0": "minecraft:quartz_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
+        "156:1": "minecraft:quartz_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
+        "156:2": "minecraft:quartz_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
+        "156:3": "minecraft:quartz_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
+        "156:4": "minecraft:quartz_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
+        "156:5": "minecraft:quartz_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
+        "156:6": "minecraft:quartz_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
+        "156:7": "minecraft:quartz_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
         "157:0": "minecraft:activator_rail[shape=north_south,powered=false]",
         "157:1": "minecraft:activator_rail[shape=east_west,powered=false]",
         "157:2": "minecraft:activator_rail[shape=ascending_east,powered=false]",
         "157:3": "minecraft:activator_rail[shape=ascending_west,powered=false]",
-        "157:4":
-            "minecraft:activator_rail[shape=ascending_north,powered=false]",
-        "157:5":
-            "minecraft:activator_rail[shape=ascending_south,powered=false]",
+        "157:4": "minecraft:activator_rail[shape=ascending_north,powered=false]",
+        "157:5": "minecraft:activator_rail[shape=ascending_south,powered=false]",
         "157:8": "minecraft:activator_rail[shape=north_south,powered=true]",
         "157:9": "minecraft:activator_rail[shape=east_west,powered=true]",
         "157:10": "minecraft:activator_rail[shape=ascending_east,powered=true]",
         "157:11": "minecraft:activator_rail[shape=ascending_west,powered=true]",
-        "157:12":
-            "minecraft:activator_rail[shape=ascending_north,powered=true]",
-        "157:13":
-            "minecraft:activator_rail[shape=ascending_south,powered=true]",
+        "157:12": "minecraft:activator_rail[shape=ascending_north,powered=true]",
+        "157:13": "minecraft:activator_rail[shape=ascending_south,powered=true]",
         "158:0": "minecraft:dropper[triggered=false,facing=down]",
         "158:1": "minecraft:dropper[triggered=false,facing=up]",
         "158:2": "minecraft:dropper[triggered=false,facing=north]",
@@ -1315,38 +1166,22 @@ export default {
         "159:13": "minecraft:green_terracotta",
         "159:14": "minecraft:red_terracotta",
         "159:15": "minecraft:black_terracotta",
-        "160:0":
-            "minecraft:white_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "160:1":
-            "minecraft:orange_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "160:2":
-            "minecraft:magenta_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "160:3":
-            "minecraft:light_blue_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "160:4":
-            "minecraft:yellow_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "160:5":
-            "minecraft:lime_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "160:6":
-            "minecraft:pink_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "160:7":
-            "minecraft:gray_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "160:8":
-            "minecraft:light_gray_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "160:9":
-            "minecraft:cyan_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "160:10":
-            "minecraft:purple_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "160:11":
-            "minecraft:blue_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "160:12":
-            "minecraft:brown_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "160:13":
-            "minecraft:green_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "160:14":
-            "minecraft:red_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "160:15":
-            "minecraft:black_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:0": "minecraft:white_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:1": "minecraft:orange_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:2": "minecraft:magenta_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:3": "minecraft:light_blue_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:4": "minecraft:yellow_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:5": "minecraft:lime_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:6": "minecraft:pink_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:7": "minecraft:gray_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:8": "minecraft:light_gray_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:9": "minecraft:cyan_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:10": "minecraft:purple_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:11": "minecraft:blue_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:12": "minecraft:brown_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:13": "minecraft:green_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:14": "minecraft:red_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "160:15": "minecraft:black_stained_glass_pane[east=false,south=false,north=false,west=false,waterlogged=false]",
         "161:0": "minecraft:acacia_leaves[persistent=false,distance=1]",
         "161:1": "minecraft:dark_oak_leaves[persistent=false,distance=1]",
         "161:4": "minecraft:acacia_leaves[persistent=true,distance=1]",
@@ -1363,72 +1198,40 @@ export default {
         "162:9": "minecraft:dark_oak_log[axis=z]",
         "162:12": "minecraft:acacia_wood",
         "162:13": "minecraft:dark_oak_wood",
-        "163:0":
-            "minecraft:acacia_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
-        "163:1":
-            "minecraft:acacia_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
-        "163:2":
-            "minecraft:acacia_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
-        "163:3":
-            "minecraft:acacia_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
-        "163:4":
-            "minecraft:acacia_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
-        "163:5":
-            "minecraft:acacia_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
-        "163:6":
-            "minecraft:acacia_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
-        "163:7":
-            "minecraft:acacia_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
-        "164:0":
-            "minecraft:dark_oak_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
-        "164:1":
-            "minecraft:dark_oak_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
-        "164:2":
-            "minecraft:dark_oak_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
-        "164:3":
-            "minecraft:dark_oak_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
-        "164:4":
-            "minecraft:dark_oak_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
-        "164:5":
-            "minecraft:dark_oak_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
-        "164:6":
-            "minecraft:dark_oak_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
-        "164:7":
-            "minecraft:dark_oak_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
+        "163:0": "minecraft:acacia_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
+        "163:1": "minecraft:acacia_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
+        "163:2": "minecraft:acacia_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
+        "163:3": "minecraft:acacia_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
+        "163:4": "minecraft:acacia_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
+        "163:5": "minecraft:acacia_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
+        "163:6": "minecraft:acacia_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
+        "163:7": "minecraft:acacia_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
+        "164:0": "minecraft:dark_oak_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
+        "164:1": "minecraft:dark_oak_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
+        "164:2": "minecraft:dark_oak_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
+        "164:3": "minecraft:dark_oak_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
+        "164:4": "minecraft:dark_oak_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
+        "164:5": "minecraft:dark_oak_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
+        "164:6": "minecraft:dark_oak_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
+        "164:7": "minecraft:dark_oak_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
         "165:0": "minecraft:slime_block",
         "166:0": "minecraft:barrier",
-        "167:0":
-            "minecraft:iron_trapdoor[half=bottom,facing=north,open=false,waterlogged=false]",
-        "167:1":
-            "minecraft:iron_trapdoor[half=bottom,facing=south,open=false,waterlogged=false]",
-        "167:2":
-            "minecraft:iron_trapdoor[half=bottom,facing=west,open=false,waterlogged=false]",
-        "167:3":
-            "minecraft:iron_trapdoor[half=bottom,facing=east,open=false,waterlogged=false]",
-        "167:4":
-            "minecraft:iron_trapdoor[half=bottom,facing=north,open=true,waterlogged=false]",
-        "167:5":
-            "minecraft:iron_trapdoor[half=bottom,facing=south,open=true,waterlogged=false]",
-        "167:6":
-            "minecraft:iron_trapdoor[half=bottom,facing=west,open=true,waterlogged=false]",
-        "167:7":
-            "minecraft:iron_trapdoor[half=bottom,facing=east,open=true,waterlogged=false]",
-        "167:8":
-            "minecraft:iron_trapdoor[half=top,facing=north,open=false,waterlogged=false]",
-        "167:9":
-            "minecraft:iron_trapdoor[half=top,facing=south,open=false,waterlogged=false]",
-        "167:10":
-            "minecraft:iron_trapdoor[half=top,facing=west,open=false,waterlogged=false]",
-        "167:11":
-            "minecraft:iron_trapdoor[half=top,facing=east,open=false,waterlogged=false]",
-        "167:12":
-            "minecraft:iron_trapdoor[half=top,facing=north,open=true,waterlogged=false]",
-        "167:13":
-            "minecraft:iron_trapdoor[half=top,facing=south,open=true,waterlogged=false]",
-        "167:14":
-            "minecraft:iron_trapdoor[half=top,facing=west,open=true,waterlogged=false]",
-        "167:15":
-            "minecraft:iron_trapdoor[half=top,facing=east,open=true,waterlogged=false]",
+        "167:0": "minecraft:iron_trapdoor[half=bottom,facing=north,open=false,waterlogged=false]",
+        "167:1": "minecraft:iron_trapdoor[half=bottom,facing=south,open=false,waterlogged=false]",
+        "167:2": "minecraft:iron_trapdoor[half=bottom,facing=west,open=false,waterlogged=false]",
+        "167:3": "minecraft:iron_trapdoor[half=bottom,facing=east,open=false,waterlogged=false]",
+        "167:4": "minecraft:iron_trapdoor[half=bottom,facing=north,open=true,waterlogged=false]",
+        "167:5": "minecraft:iron_trapdoor[half=bottom,facing=south,open=true,waterlogged=false]",
+        "167:6": "minecraft:iron_trapdoor[half=bottom,facing=west,open=true,waterlogged=false]",
+        "167:7": "minecraft:iron_trapdoor[half=bottom,facing=east,open=true,waterlogged=false]",
+        "167:8": "minecraft:iron_trapdoor[half=top,facing=north,open=false,waterlogged=false]",
+        "167:9": "minecraft:iron_trapdoor[half=top,facing=south,open=false,waterlogged=false]",
+        "167:10": "minecraft:iron_trapdoor[half=top,facing=west,open=false,waterlogged=false]",
+        "167:11": "minecraft:iron_trapdoor[half=top,facing=east,open=false,waterlogged=false]",
+        "167:12": "minecraft:iron_trapdoor[half=top,facing=north,open=true,waterlogged=false]",
+        "167:13": "minecraft:iron_trapdoor[half=top,facing=south,open=true,waterlogged=false]",
+        "167:14": "minecraft:iron_trapdoor[half=top,facing=west,open=true,waterlogged=false]",
+        "167:15": "minecraft:iron_trapdoor[half=top,facing=east,open=true,waterlogged=false]",
         "168:0": "minecraft:prismarine",
         "168:1": "minecraft:prismarine_bricks",
         "168:2": "minecraft:dark_prismarine",
@@ -1506,324 +1309,170 @@ export default {
         "179:0": "minecraft:red_sandstone",
         "179:1": "minecraft:chiseled_red_sandstone",
         "179:2": "minecraft:cut_red_sandstone",
-        "180:0":
-            "minecraft:red_sandstone_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
-        "180:1":
-            "minecraft:red_sandstone_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
-        "180:2":
-            "minecraft:red_sandstone_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
-        "180:3":
-            "minecraft:red_sandstone_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
-        "180:4":
-            "minecraft:red_sandstone_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
-        "180:5":
-            "minecraft:red_sandstone_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
-        "180:6":
-            "minecraft:red_sandstone_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
-        "180:7":
-            "minecraft:red_sandstone_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
+        "180:0": "minecraft:red_sandstone_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
+        "180:1": "minecraft:red_sandstone_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
+        "180:2": "minecraft:red_sandstone_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
+        "180:3": "minecraft:red_sandstone_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
+        "180:4": "minecraft:red_sandstone_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
+        "180:5": "minecraft:red_sandstone_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
+        "180:6": "minecraft:red_sandstone_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
+        "180:7": "minecraft:red_sandstone_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
         "181:0": "minecraft:red_sandstone_slab[type=double,waterlogged=false]",
         "181:8": "minecraft:smooth_red_sandstone",
         "182:0": "minecraft:red_sandstone_slab[type=bottom,waterlogged=false]",
         "182:8": "minecraft:red_sandstone_slab[type=top,waterlogged=false]",
-        "183:0":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=south,open=false]",
-        "183:1":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=west,open=false]",
-        "183:2":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=north,open=false]",
-        "183:3":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=east,open=false]",
-        "183:4":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=south,open=true]",
-        "183:5":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=west,open=true]",
-        "183:6":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=north,open=true]",
-        "183:7":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=east,open=true]",
-        "183:8":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=south,open=false]",
-        "183:9":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=west,open=false]",
-        "183:10":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=north,open=false]",
-        "183:11":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=east,open=false]",
-        "183:12":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=south,open=true]",
-        "183:13":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=west,open=true]",
-        "183:14":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=north,open=true]",
-        "183:15":
-            "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=east,open=true]",
-        "184:0":
-            "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=south,open=false]",
-        "184:1":
-            "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=west,open=false]",
-        "184:2":
-            "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=north,open=false]",
-        "184:3":
-            "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=east,open=false]",
-        "184:4":
-            "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=south,open=true]",
-        "184:5":
-            "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=west,open=true]",
-        "184:6":
-            "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=north,open=true]",
-        "184:7":
-            "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=east,open=true]",
-        "184:8":
-            "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=south,open=false]",
-        "184:9":
-            "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=west,open=false]",
-        "184:10":
-            "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=north,open=false]",
-        "184:11":
-            "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=east,open=false]",
-        "184:12":
-            "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=south,open=true]",
-        "184:13":
-            "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=west,open=true]",
-        "184:14":
-            "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=north,open=true]",
-        "184:15":
-            "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=east,open=true]",
-        "185:0":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=south,open=false]",
-        "185:1":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=west,open=false]",
-        "185:2":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=north,open=false]",
-        "185:3":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=east,open=false]",
-        "185:4":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=south,open=true]",
-        "185:5":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=west,open=true]",
-        "185:6":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=north,open=true]",
-        "185:7":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=east,open=true]",
-        "185:8":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=south,open=false]",
-        "185:9":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=west,open=false]",
-        "185:10":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=north,open=false]",
-        "185:11":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=east,open=false]",
-        "185:12":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=south,open=true]",
-        "185:13":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=west,open=true]",
-        "185:14":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=north,open=true]",
-        "185:15":
-            "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=east,open=true]",
-        "186:0":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=south,open=false]",
-        "186:1":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=west,open=false]",
-        "186:2":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=north,open=false]",
-        "186:3":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=east,open=false]",
-        "186:4":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=south,open=true]",
-        "186:5":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=west,open=true]",
-        "186:6":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=north,open=true]",
-        "186:7":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=east,open=true]",
-        "186:8":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=south,open=false]",
-        "186:9":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=west,open=false]",
-        "186:10":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=north,open=false]",
-        "186:11":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=east,open=false]",
-        "186:12":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=south,open=true]",
-        "186:13":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=west,open=true]",
-        "186:14":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=north,open=true]",
-        "186:15":
-            "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=east,open=true]",
-        "187:0":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=south,open=false]",
-        "187:1":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=west,open=false]",
-        "187:2":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=north,open=false]",
-        "187:3":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=east,open=false]",
-        "187:4":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=south,open=true]",
-        "187:5":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=west,open=true]",
-        "187:6":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=north,open=true]",
-        "187:7":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=east,open=true]",
-        "187:8":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=south,open=false]",
-        "187:9":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=west,open=false]",
-        "187:10":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=north,open=false]",
-        "187:11":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=east,open=false]",
-        "187:12":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=south,open=true]",
-        "187:13":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=west,open=true]",
-        "187:14":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=north,open=true]",
-        "187:15":
-            "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=east,open=true]",
-        "188:0":
-            "minecraft:spruce_fence[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "189:0":
-            "minecraft:birch_fence[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "190:0":
-            "minecraft:jungle_fence[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "191:0":
-            "minecraft:dark_oak_fence[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "192:0":
-            "minecraft:acacia_fence[east=false,south=false,north=false,west=false,waterlogged=false]",
-        "193:0":
-            "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=east,open=false]",
-        "193:1":
-            "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=south,open=false]",
-        "193:2":
-            "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=west,open=false]",
-        "193:3":
-            "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=north,open=false]",
-        "193:4":
-            "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=east,open=true]",
-        "193:5":
-            "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=south,open=true]",
-        "193:6":
-            "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=west,open=true]",
-        "193:7":
-            "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=north,open=true]",
-        "193:8":
-            "minecraft:spruce_door[hinge=left,half=upper,powered=false,facing=east,open=false]",
-        "193:9":
-            "minecraft:spruce_door[hinge=right,half=upper,powered=false,facing=east,open=false]",
-        "193:10":
-            "minecraft:spruce_door[hinge=left,half=upper,powered=true,facing=east,open=false]",
-        "193:11":
-            "minecraft:spruce_door[hinge=right,half=upper,powered=true,facing=east,open=false]",
-        "194:0":
-            "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=east,open=false]",
-        "194:1":
-            "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=south,open=false]",
-        "194:2":
-            "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=west,open=false]",
-        "194:3":
-            "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=north,open=false]",
-        "194:4":
-            "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=east,open=true]",
-        "194:5":
-            "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=south,open=true]",
-        "194:6":
-            "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=west,open=true]",
-        "194:7":
-            "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=north,open=true]",
-        "194:8":
-            "minecraft:birch_door[hinge=left,half=upper,powered=false,facing=east,open=false]",
-        "194:9":
-            "minecraft:birch_door[hinge=right,half=upper,powered=false,facing=east,open=false]",
-        "194:10":
-            "minecraft:birch_door[hinge=left,half=upper,powered=true,facing=east,open=false]",
-        "194:11":
-            "minecraft:birch_door[hinge=right,half=upper,powered=true,facing=east,open=false]",
-        "195:0":
-            "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=east,open=false]",
-        "195:1":
-            "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=south,open=false]",
-        "195:2":
-            "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=west,open=false]",
-        "195:3":
-            "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=north,open=false]",
-        "195:4":
-            "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=east,open=true]",
-        "195:5":
-            "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=south,open=true]",
-        "195:6":
-            "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=west,open=true]",
-        "195:7":
-            "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=north,open=true]",
-        "195:8":
-            "minecraft:jungle_door[hinge=left,half=upper,powered=false,facing=east,open=false]",
-        "195:9":
-            "minecraft:jungle_door[hinge=right,half=upper,powered=false,facing=east,open=false]",
-        "195:10":
-            "minecraft:jungle_door[hinge=left,half=upper,powered=true,facing=east,open=false]",
-        "195:11":
-            "minecraft:jungle_door[hinge=right,half=upper,powered=true,facing=east,open=false]",
-        "196:0":
-            "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=east,open=false]",
-        "196:1":
-            "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=south,open=false]",
-        "196:2":
-            "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=west,open=false]",
-        "196:3":
-            "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=north,open=false]",
-        "196:4":
-            "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=east,open=true]",
-        "196:5":
-            "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=south,open=true]",
-        "196:6":
-            "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=west,open=true]",
-        "196:7":
-            "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=north,open=true]",
-        "196:8":
-            "minecraft:acacia_door[hinge=left,half=upper,powered=false,facing=east,open=false]",
-        "196:9":
-            "minecraft:acacia_door[hinge=right,half=upper,powered=false,facing=east,open=false]",
-        "196:10":
-            "minecraft:acacia_door[hinge=left,half=upper,powered=true,facing=east,open=false]",
-        "196:11":
-            "minecraft:acacia_door[hinge=right,half=upper,powered=true,facing=east,open=false]",
-        "197:0":
-            "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=east,open=false]",
-        "197:1":
-            "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=south,open=false]",
-        "197:2":
-            "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=west,open=false]",
-        "197:3":
-            "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=north,open=false]",
-        "197:4":
-            "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=east,open=true]",
-        "197:5":
-            "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=south,open=true]",
-        "197:6":
-            "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=west,open=true]",
-        "197:7":
-            "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=north,open=true]",
-        "197:8":
-            "minecraft:dark_oak_door[hinge=left,half=upper,powered=false,facing=east,open=false]",
-        "197:9":
-            "minecraft:dark_oak_door[hinge=right,half=upper,powered=false,facing=east,open=false]",
-        "197:10":
-            "minecraft:dark_oak_door[hinge=left,half=upper,powered=true,facing=east,open=false]",
-        "197:11":
-            "minecraft:dark_oak_door[hinge=right,half=upper,powered=true,facing=east,open=false]",
+        "183:0": "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=south,open=false]",
+        "183:1": "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=west,open=false]",
+        "183:2": "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=north,open=false]",
+        "183:3": "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=east,open=false]",
+        "183:4": "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=south,open=true]",
+        "183:5": "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=west,open=true]",
+        "183:6": "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=north,open=true]",
+        "183:7": "minecraft:spruce_fence_gate[in_wall=false,powered=false,facing=east,open=true]",
+        "183:8": "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=south,open=false]",
+        "183:9": "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=west,open=false]",
+        "183:10": "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=north,open=false]",
+        "183:11": "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=east,open=false]",
+        "183:12": "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=south,open=true]",
+        "183:13": "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=west,open=true]",
+        "183:14": "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=north,open=true]",
+        "183:15": "minecraft:spruce_fence_gate[in_wall=false,powered=true,facing=east,open=true]",
+        "184:0": "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=south,open=false]",
+        "184:1": "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=west,open=false]",
+        "184:2": "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=north,open=false]",
+        "184:3": "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=east,open=false]",
+        "184:4": "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=south,open=true]",
+        "184:5": "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=west,open=true]",
+        "184:6": "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=north,open=true]",
+        "184:7": "minecraft:birch_fence_gate[in_wall=false,powered=false,facing=east,open=true]",
+        "184:8": "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=south,open=false]",
+        "184:9": "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=west,open=false]",
+        "184:10": "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=north,open=false]",
+        "184:11": "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=east,open=false]",
+        "184:12": "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=south,open=true]",
+        "184:13": "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=west,open=true]",
+        "184:14": "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=north,open=true]",
+        "184:15": "minecraft:birch_fence_gate[in_wall=false,powered=true,facing=east,open=true]",
+        "185:0": "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=south,open=false]",
+        "185:1": "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=west,open=false]",
+        "185:2": "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=north,open=false]",
+        "185:3": "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=east,open=false]",
+        "185:4": "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=south,open=true]",
+        "185:5": "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=west,open=true]",
+        "185:6": "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=north,open=true]",
+        "185:7": "minecraft:jungle_fence_gate[in_wall=false,powered=false,facing=east,open=true]",
+        "185:8": "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=south,open=false]",
+        "185:9": "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=west,open=false]",
+        "185:10": "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=north,open=false]",
+        "185:11": "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=east,open=false]",
+        "185:12": "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=south,open=true]",
+        "185:13": "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=west,open=true]",
+        "185:14": "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=north,open=true]",
+        "185:15": "minecraft:jungle_fence_gate[in_wall=false,powered=true,facing=east,open=true]",
+        "186:0": "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=south,open=false]",
+        "186:1": "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=west,open=false]",
+        "186:2": "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=north,open=false]",
+        "186:3": "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=east,open=false]",
+        "186:4": "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=south,open=true]",
+        "186:5": "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=west,open=true]",
+        "186:6": "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=north,open=true]",
+        "186:7": "minecraft:dark_oak_fence_gate[in_wall=false,powered=false,facing=east,open=true]",
+        "186:8": "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=south,open=false]",
+        "186:9": "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=west,open=false]",
+        "186:10": "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=north,open=false]",
+        "186:11": "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=east,open=false]",
+        "186:12": "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=south,open=true]",
+        "186:13": "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=west,open=true]",
+        "186:14": "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=north,open=true]",
+        "186:15": "minecraft:dark_oak_fence_gate[in_wall=false,powered=true,facing=east,open=true]",
+        "187:0": "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=south,open=false]",
+        "187:1": "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=west,open=false]",
+        "187:2": "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=north,open=false]",
+        "187:3": "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=east,open=false]",
+        "187:4": "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=south,open=true]",
+        "187:5": "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=west,open=true]",
+        "187:6": "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=north,open=true]",
+        "187:7": "minecraft:acacia_fence_gate[in_wall=false,powered=false,facing=east,open=true]",
+        "187:8": "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=south,open=false]",
+        "187:9": "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=west,open=false]",
+        "187:10": "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=north,open=false]",
+        "187:11": "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=east,open=false]",
+        "187:12": "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=south,open=true]",
+        "187:13": "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=west,open=true]",
+        "187:14": "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=north,open=true]",
+        "187:15": "minecraft:acacia_fence_gate[in_wall=false,powered=true,facing=east,open=true]",
+        "188:0": "minecraft:spruce_fence[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "189:0": "minecraft:birch_fence[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "190:0": "minecraft:jungle_fence[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "191:0": "minecraft:dark_oak_fence[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "192:0": "minecraft:acacia_fence[east=false,south=false,north=false,west=false,waterlogged=false]",
+        "193:0": "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=east,open=false]",
+        "193:1": "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=south,open=false]",
+        "193:2": "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=west,open=false]",
+        "193:3": "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=north,open=false]",
+        "193:4": "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=east,open=true]",
+        "193:5": "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=south,open=true]",
+        "193:6": "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=west,open=true]",
+        "193:7": "minecraft:spruce_door[hinge=right,half=lower,powered=false,facing=north,open=true]",
+        "193:8": "minecraft:spruce_door[hinge=left,half=upper,powered=false,facing=east,open=false]",
+        "193:9": "minecraft:spruce_door[hinge=right,half=upper,powered=false,facing=east,open=false]",
+        "193:10": "minecraft:spruce_door[hinge=left,half=upper,powered=true,facing=east,open=false]",
+        "193:11": "minecraft:spruce_door[hinge=right,half=upper,powered=true,facing=east,open=false]",
+        "194:0": "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=east,open=false]",
+        "194:1": "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=south,open=false]",
+        "194:2": "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=west,open=false]",
+        "194:3": "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=north,open=false]",
+        "194:4": "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=east,open=true]",
+        "194:5": "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=south,open=true]",
+        "194:6": "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=west,open=true]",
+        "194:7": "minecraft:birch_door[hinge=right,half=lower,powered=false,facing=north,open=true]",
+        "194:8": "minecraft:birch_door[hinge=left,half=upper,powered=false,facing=east,open=false]",
+        "194:9": "minecraft:birch_door[hinge=right,half=upper,powered=false,facing=east,open=false]",
+        "194:10": "minecraft:birch_door[hinge=left,half=upper,powered=true,facing=east,open=false]",
+        "194:11": "minecraft:birch_door[hinge=right,half=upper,powered=true,facing=east,open=false]",
+        "195:0": "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=east,open=false]",
+        "195:1": "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=south,open=false]",
+        "195:2": "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=west,open=false]",
+        "195:3": "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=north,open=false]",
+        "195:4": "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=east,open=true]",
+        "195:5": "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=south,open=true]",
+        "195:6": "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=west,open=true]",
+        "195:7": "minecraft:jungle_door[hinge=right,half=lower,powered=false,facing=north,open=true]",
+        "195:8": "minecraft:jungle_door[hinge=left,half=upper,powered=false,facing=east,open=false]",
+        "195:9": "minecraft:jungle_door[hinge=right,half=upper,powered=false,facing=east,open=false]",
+        "195:10": "minecraft:jungle_door[hinge=left,half=upper,powered=true,facing=east,open=false]",
+        "195:11": "minecraft:jungle_door[hinge=right,half=upper,powered=true,facing=east,open=false]",
+        "196:0": "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=east,open=false]",
+        "196:1": "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=south,open=false]",
+        "196:2": "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=west,open=false]",
+        "196:3": "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=north,open=false]",
+        "196:4": "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=east,open=true]",
+        "196:5": "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=south,open=true]",
+        "196:6": "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=west,open=true]",
+        "196:7": "minecraft:acacia_door[hinge=right,half=lower,powered=false,facing=north,open=true]",
+        "196:8": "minecraft:acacia_door[hinge=left,half=upper,powered=false,facing=east,open=false]",
+        "196:9": "minecraft:acacia_door[hinge=right,half=upper,powered=false,facing=east,open=false]",
+        "196:10": "minecraft:acacia_door[hinge=left,half=upper,powered=true,facing=east,open=false]",
+        "196:11": "minecraft:acacia_door[hinge=right,half=upper,powered=true,facing=east,open=false]",
+        "197:0": "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=east,open=false]",
+        "197:1": "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=south,open=false]",
+        "197:2": "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=west,open=false]",
+        "197:3": "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=north,open=false]",
+        "197:4": "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=east,open=true]",
+        "197:5": "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=south,open=true]",
+        "197:6": "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=west,open=true]",
+        "197:7": "minecraft:dark_oak_door[hinge=right,half=lower,powered=false,facing=north,open=true]",
+        "197:8": "minecraft:dark_oak_door[hinge=left,half=upper,powered=false,facing=east,open=false]",
+        "197:9": "minecraft:dark_oak_door[hinge=right,half=upper,powered=false,facing=east,open=false]",
+        "197:10": "minecraft:dark_oak_door[hinge=left,half=upper,powered=true,facing=east,open=false]",
+        "197:11": "minecraft:dark_oak_door[hinge=right,half=upper,powered=true,facing=east,open=false]",
         "198:0": "minecraft:end_rod[facing=down]",
         "198:1": "minecraft:end_rod[facing=up]",
         "198:2": "minecraft:end_rod[facing=north]",
         "198:3": "minecraft:end_rod[facing=south]",
         "198:4": "minecraft:end_rod[facing=west]",
         "198:5": "minecraft:end_rod[facing=east]",
-        "199:0":
-            "minecraft:chorus_plant[east=false,south=false,north=false,west=false,up=false,down=false]",
+        "199:0": "minecraft:chorus_plant[east=false,south=false,north=false,west=false,up=false,down=false]",
         "200:0": "minecraft:chorus_flower[age=0]",
         "200:1": "minecraft:chorus_flower[age=1]",
         "200:2": "minecraft:chorus_flower[age=2]",
@@ -1834,22 +1483,14 @@ export default {
         "202:0": "minecraft:purpur_pillar[axis=y]",
         "202:4": "minecraft:purpur_pillar[axis=x]",
         "202:8": "minecraft:purpur_pillar[axis=z]",
-        "203:0":
-            "minecraft:purpur_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
-        "203:1":
-            "minecraft:purpur_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
-        "203:2":
-            "minecraft:purpur_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
-        "203:3":
-            "minecraft:purpur_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
-        "203:4":
-            "minecraft:purpur_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
-        "203:5":
-            "minecraft:purpur_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
-        "203:6":
-            "minecraft:purpur_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
-        "203:7":
-            "minecraft:purpur_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
+        "203:0": "minecraft:purpur_stairs[half=bottom,shape=straight,facing=east,waterlogged=false]",
+        "203:1": "minecraft:purpur_stairs[half=bottom,shape=straight,facing=west,waterlogged=false]",
+        "203:2": "minecraft:purpur_stairs[half=bottom,shape=straight,facing=south,waterlogged=false]",
+        "203:3": "minecraft:purpur_stairs[half=bottom,shape=straight,facing=north,waterlogged=false]",
+        "203:4": "minecraft:purpur_stairs[half=top,shape=straight,facing=east,waterlogged=false]",
+        "203:5": "minecraft:purpur_stairs[half=top,shape=straight,facing=west,waterlogged=false]",
+        "203:6": "minecraft:purpur_stairs[half=top,shape=straight,facing=south,waterlogged=false]",
+        "203:7": "minecraft:purpur_stairs[half=top,shape=straight,facing=north,waterlogged=false]",
         "204:0": "minecraft:purpur_slab[type=double,waterlogged=false]",
         "205:0": "minecraft:purpur_slab[type=bottom,waterlogged=false]",
         "205:8": "minecraft:purpur_slab[type=top,waterlogged=false]",
@@ -1860,44 +1501,28 @@ export default {
         "207:3": "minecraft:beetroots[age=3]",
         "208:0": "minecraft:grass_path",
         "209:0": "minecraft:end_gateway",
-        "210:0":
-            "minecraft:repeating_command_block[conditional=false,facing=down]",
-        "210:1":
-            "minecraft:repeating_command_block[conditional=false,facing=up]",
-        "210:2":
-            "minecraft:repeating_command_block[conditional=false,facing=north]",
-        "210:3":
-            "minecraft:repeating_command_block[conditional=false,facing=south]",
-        "210:4":
-            "minecraft:repeating_command_block[conditional=false,facing=west]",
-        "210:5":
-            "minecraft:repeating_command_block[conditional=false,facing=east]",
-        "210:8":
-            "minecraft:repeating_command_block[conditional=true,facing=down]",
-        "210:9":
-            "minecraft:repeating_command_block[conditional=true,facing=up]",
-        "210:10":
-            "minecraft:repeating_command_block[conditional=true,facing=north]",
-        "210:11":
-            "minecraft:repeating_command_block[conditional=true,facing=south]",
-        "210:12":
-            "minecraft:repeating_command_block[conditional=true,facing=west]",
-        "210:13":
-            "minecraft:repeating_command_block[conditional=true,facing=east]",
+        "210:0": "minecraft:repeating_command_block[conditional=false,facing=down]",
+        "210:1": "minecraft:repeating_command_block[conditional=false,facing=up]",
+        "210:2": "minecraft:repeating_command_block[conditional=false,facing=north]",
+        "210:3": "minecraft:repeating_command_block[conditional=false,facing=south]",
+        "210:4": "minecraft:repeating_command_block[conditional=false,facing=west]",
+        "210:5": "minecraft:repeating_command_block[conditional=false,facing=east]",
+        "210:8": "minecraft:repeating_command_block[conditional=true,facing=down]",
+        "210:9": "minecraft:repeating_command_block[conditional=true,facing=up]",
+        "210:10": "minecraft:repeating_command_block[conditional=true,facing=north]",
+        "210:11": "minecraft:repeating_command_block[conditional=true,facing=south]",
+        "210:12": "minecraft:repeating_command_block[conditional=true,facing=west]",
+        "210:13": "minecraft:repeating_command_block[conditional=true,facing=east]",
         "211:0": "minecraft:chain_command_block[conditional=false,facing=down]",
         "211:1": "minecraft:chain_command_block[conditional=false,facing=up]",
-        "211:2":
-            "minecraft:chain_command_block[conditional=false,facing=north]",
-        "211:3":
-            "minecraft:chain_command_block[conditional=false,facing=south]",
+        "211:2": "minecraft:chain_command_block[conditional=false,facing=north]",
+        "211:3": "minecraft:chain_command_block[conditional=false,facing=south]",
         "211:4": "minecraft:chain_command_block[conditional=false,facing=west]",
         "211:5": "minecraft:chain_command_block[conditional=false,facing=east]",
         "211:8": "minecraft:chain_command_block[conditional=true,facing=down]",
         "211:9": "minecraft:chain_command_block[conditional=true,facing=up]",
-        "211:10":
-            "minecraft:chain_command_block[conditional=true,facing=north]",
-        "211:11":
-            "minecraft:chain_command_block[conditional=true,facing=south]",
+        "211:10": "minecraft:chain_command_block[conditional=true,facing=north]",
+        "211:11": "minecraft:chain_command_block[conditional=true,facing=south]",
         "211:12": "minecraft:chain_command_block[conditional=true,facing=west]",
         "211:13": "minecraft:chain_command_block[conditional=true,facing=east]",
         "212:0": "minecraft:frosted_ice[age=0]",
@@ -2767,3 +2392,655 @@ export default {
         "2267:0": "minecraft:music_disc_wait",
     },
 };
+
+const blocks = [
+    1,
+    2,
+    3,
+    4,
+    5,
+    7,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    19,
+    21,
+    22,
+    23,
+    24,
+    25,
+    35,
+    41,
+    42,
+    43,
+    45,
+    46,
+    47,
+    48,
+    49,
+    56,
+    57,
+    58,
+    61,
+    62,
+    73,
+    74,
+    80,
+    82,
+    84,
+    87,
+    88,
+    97,
+    98,
+    99,
+    100,
+    103,
+    110,
+    112,
+    121,
+    123,
+    124,
+    125,
+    129,
+    133,
+    137,
+    152,
+    155,
+    158,
+    159,
+    162,
+    165,
+    168,
+    169,
+    170,
+    172,
+    173,
+    174,
+    179,
+    181,
+    201,
+    202,
+    204,
+    206,
+    210,
+    211,
+    213,
+    214,
+    215,
+    216,
+    235,
+    236,
+    237,
+    238,
+    239,
+    240,
+    241,
+    242,
+    243,
+    244,
+    245,
+    246,
+    247,
+    248,
+    249,
+    250,
+    251,
+    252,
+];
+const stairs = [
+    53,
+    67,
+    108,
+    109,
+    114,
+    128,
+    134,
+    135,
+    136,
+    156,
+    163,
+    164,
+    180,
+    203,
+];
+var connectors = {
+    101: [...blocks, ...stairs, 101],
+    102: [...blocks, ...stairs, 102, 160],
+    160: [...blocks, ...stairs, 102, 160],
+    85: [
+        ...blocks,
+        ...stairs,
+        85,
+        113,
+        107,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+    ],
+    113: [
+        ...blocks,
+        ...stairs,
+        85,
+        113,
+        107,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+    ],
+    188: [
+        ...blocks,
+        ...stairs,
+        85,
+        113,
+        107,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+    ],
+    189: [
+        ...blocks,
+        ...stairs,
+        85,
+        113,
+        107,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+    ],
+    190: [
+        ...blocks,
+        ...stairs,
+        85,
+        113,
+        107,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+    ],
+    191: [
+        ...blocks,
+        ...stairs,
+        85,
+        113,
+        107,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+    ],
+    192: [
+        ...blocks,
+        ...stairs,
+        85,
+        113,
+        107,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+    ],
+    139: [...blocks, ...stairs, 139],
+};
+
+/**
+ * Deconstructs a stringual tag into a tag object.
+ * @param tag The stringual tag.
+ * @returns The tag object.
+ */
+const deconstructTag = (tag) => {
+    if (!tag.includes("[")) {
+        return { tag, state: {} };
+    }
+    const tagParts = tag.split("[");
+    const blockState = tagParts[1]
+        .slice(0, -1)
+        .split(",")
+        .reduce((acc, state) => {
+        const stateParts = state.split("=");
+        acc[stateParts[0]] = stateParts[1];
+        return acc;
+    }, {});
+    return {
+        tag: tagParts[0],
+        state: blockState,
+    };
+};
+/**
+ * Constructs a stringual tag from a tag object.
+ * @param tag The tag object.
+ * @returns The stringual tag.
+ */
+const constructTag = (tag) => {
+    const blockState = Object.keys(tag.state).map((blockState) => {
+        return `${blockState}=${tag.state[blockState]}`;
+    });
+    return `${tag.tag}[${blockState.join(",")}]`;
+};
+/**
+ * Gets the ID and data from the block at the provided index.
+ * @param idx The index of the block to fetch the ID and data for.
+ * @param id The ID of the block at the provided index.
+ * @param data The data of the block at the provided index.
+ * @returns
+ */
+const getIdAndData = (idx, id, data) => {
+    if (idx === null) {
+        return null;
+    }
+    return { id: id[idx] < 0 ? 256 + id[idx] : id[idx], data: data[idx] };
+};
+
+const extractDimensions = (nbt) => {
+    if (!nbt.value["Length"])
+        throw new Error("NBT is missing 'Length' tag");
+    if (!nbt.value["Height"])
+        throw new Error("NBT is missing 'Height' tag");
+    if (!nbt.value["Width"])
+        throw new Error("NBT is missing 'Width' tag");
+    const length = nbt.value["Length"].value;
+    const height = nbt.value["Height"].value;
+    const width = nbt.value["Width"].value;
+    return { width, height, length };
+};
+
+/**
+ * Gets the coordinates of the block at the provided index.
+ * @param idx The index of the block to get the coordinates of.
+ * @param dimensions The dimensions of the schematic.
+ * @returns The coordinates of the block in the schematic.
+ */
+const getCoordinates = (idx, { width, length }) => {
+    const x = idx % width;
+    const y = Math.floor(idx / (width * length));
+    const z = Math.floor(idx / width) % length;
+    return { x, y, z };
+};
+/**
+ * Gets the block to the north of this block, provided it exists.
+ * North is towards negative z.
+ * @param coordinates The coordinates of the block.
+ * @param dimensions The dimensions of the schematic.
+ * @returns The index of the block to the north or null if there is none.
+ */
+const getBlockNorth = ({ x, y, z }, { length, width }) => {
+    return z === 0 ? null : (y * length + (z - 1)) * width + x;
+};
+/**
+ * Gets the block to the east of this block, provided it exists.
+ * North is towards positive x.
+ * @param coordinates The coordinates of the block.
+ * @param dimensions The dimensions of the schematic.
+ * @returns The index of the block to the east or null if there is none.
+ */
+const getBlockEast = ({ x, y, z }, { length, width }) => {
+    return x === width - 1 ? null : (y * length + z) * width + (x + 1);
+};
+/**
+ * Gets the block to the south of this block, provided it exists.
+ * North is towards positive z.
+ * @param coordinates The coordinates of the block.
+ * @param dimensions The dimensions of the schematic.
+ * @returns The index of the block to the south or null if there is none.
+ */
+const getBlockSouth = ({ x, y, z }, { length, width }) => {
+    return z === length - 1 ? null : (y * length + (z + 1)) * width + x;
+};
+/**
+ * Gets the block to the west of this block, provided it exists.
+ * North is towards negative x.
+ * @param coordinates The coordinates of the block.
+ * @param dimensions The dimensions of the schematic.
+ * @returns The index of the block to the west or null if there is none.
+ */
+const getBlockWest = ({ x, y, z }, { length, width }) => {
+    return x === 0 ? null : (y * length + z) * width + (x - 1);
+};
+/**
+ * Gets the surrounding blocks of the block at the provided index.
+ * @param idx The index of the block to get the surrounded blocks of.
+ * @param nbt The full NBT of the schematic.
+ * @returns The surrounding blocks of the schematic.
+ */
+const getSurrounding = (idx, nbt) => {
+    const dimensions = extractDimensions(nbt);
+    const coordinates = getCoordinates(idx, dimensions);
+    const north = getBlockNorth(coordinates, dimensions);
+    const east = getBlockEast(coordinates, dimensions);
+    const south = getBlockSouth(coordinates, dimensions);
+    const west = getBlockWest(coordinates, dimensions);
+    const id = nbt.value["Blocks"].value;
+    const data = nbt.value["Data"].value;
+    return {
+        north: getIdAndData(north, id, data),
+        east: getIdAndData(east, id, data),
+        south: getIdAndData(south, id, data),
+        west: getIdAndData(west, id, data),
+    };
+};
+
+const fixConnectors = (tag, { id }, { north, east, south, west }) => {
+    if (north && connectors[id].includes(north.id)) {
+        if (stairs.includes(north.id)) {
+            const stairTag = deconstructTag(mapping.blocks[`${north.id}:${north.data}`]);
+            if (stairTag.state["facing"] === "south") {
+                tag.state["north"] = "true";
+            }
+        }
+        else {
+            tag.state["north"] = "true";
+        }
+    }
+    if (east && connectors[id].includes(east.id)) {
+        if (stairs.includes(east.id)) {
+            const stairTag = deconstructTag(mapping.blocks[`${east.id}:${east.data}`]);
+            if (stairTag.state["facing"] === "west") {
+                tag.state["east"] = "true";
+            }
+        }
+        else {
+            tag.state["east"] = "true";
+        }
+    }
+    if (south && connectors[id].includes(south.id)) {
+        if (stairs.includes(south.id)) {
+            const stairTag = deconstructTag(mapping.blocks[`${south.id}:${south.data}`]);
+            if (stairTag.state["facing"] === "north") {
+                tag.state["south"] = "true";
+            }
+        }
+        else {
+            tag.state["south"] = "true";
+        }
+    }
+    if (west && connectors[id].includes(west.id)) {
+        if (stairs.includes(west.id)) {
+            const stairTag = deconstructTag(mapping.blocks[`${west.id}:${west.data}`]);
+            if (stairTag.state["facing"] === "east") {
+                tag.state["west"] = "true";
+            }
+        }
+        else {
+            tag.state["west"] = "true";
+        }
+    }
+    return tag;
+};
+
+/* Not my proudest function, but it does the job... */
+const fixStairs = (tag, { north, east, south, west }) => {
+    if (!tag.state["facing"]) {
+        return tag;
+    }
+    switch (tag.state["facing"]) {
+        case "north": {
+            if (south && stairs.includes(south.id)) {
+                const stairTag = deconstructTag(mapping.blocks[`${south.id}:${south.data}`]);
+                if (stairTag.state["half"] === tag.state["half"]) {
+                    switch (stairTag.state["facing"]) {
+                        case "east": {
+                            tag.state["shape"] = "inner_right";
+                            break;
+                        }
+                        case "west": {
+                            tag.state["shape"] = "inner_left";
+                        }
+                    }
+                }
+            }
+            if (north && stairs.includes(north.id)) {
+                const stairTag = deconstructTag(mapping.blocks[`${north.id}:${north.data}`]);
+                if (stairTag.state["half"] === tag.state["half"]) {
+                    switch (stairTag.state["facing"]) {
+                        case "east": {
+                            tag.state["shape"] = "outer_right";
+                            break;
+                        }
+                        case "west": {
+                            tag.state["shape"] = "outer_left";
+                        }
+                    }
+                }
+            }
+            return tag;
+        }
+        case "east": {
+            if (east && stairs.includes(east.id)) {
+                const stairTag = deconstructTag(mapping.blocks[`${east.id}:${east.data}`]);
+                if (stairTag.state["half"] === tag.state["half"]) {
+                    switch (stairTag.state["facing"]) {
+                        case "north": {
+                            tag.state["shape"] = "outer_left";
+                            break;
+                        }
+                        case "south": {
+                            tag.state["shape"] = "outer_right";
+                        }
+                    }
+                }
+            }
+            if (west && stairs.includes(west.id)) {
+                const stairTag = deconstructTag(mapping.blocks[`${west.id}:${west.data}`]);
+                if (stairTag.state["half"] === tag.state["half"]) {
+                    switch (stairTag.state["facing"]) {
+                        case "north": {
+                            tag.state["shape"] = "inner_left";
+                            break;
+                        }
+                        case "south": {
+                            tag.state["shape"] = "inner_right";
+                        }
+                    }
+                }
+            }
+            return tag;
+        }
+        case "south": {
+            if (south && stairs.includes(south.id)) {
+                const stairTag = deconstructTag(mapping.blocks[`${south.id}:${south.data}`]);
+                if (stairTag.state["half"] === tag.state["half"]) {
+                    switch (stairTag.state["facing"]) {
+                        case "east": {
+                            tag.state["shape"] = "outer_left";
+                            break;
+                        }
+                        case "west": {
+                            tag.state["shape"] = "outer_right";
+                        }
+                    }
+                }
+            }
+            if (north && stairs.includes(north.id)) {
+                const stairTag = deconstructTag(mapping.blocks[`${north.id}:${north.data}`]);
+                if (stairTag.state["half"] === tag.state["half"]) {
+                    switch (stairTag.state["facing"]) {
+                        case "east": {
+                            tag.state["shape"] = "inner_left";
+                            break;
+                        }
+                        case "west": {
+                            tag.state["shape"] = "inner_right";
+                        }
+                    }
+                }
+            }
+            return tag;
+        }
+        case "west": {
+            if (east && stairs.includes(east.id)) {
+                const stairTag = deconstructTag(mapping.blocks[`${east.id}:${east.data}`]);
+                if (stairTag.state["half"] === tag.state["half"]) {
+                    switch (stairTag.state["facing"]) {
+                        case "north": {
+                            tag.state["shape"] = "inner_right";
+                            break;
+                        }
+                        case "south": {
+                            tag.state["shape"] = "inner_left";
+                        }
+                    }
+                }
+            }
+            if (west && stairs.includes(west.id)) {
+                const stairTag = deconstructTag(mapping.blocks[`${west.id}:${west.data}`]);
+                if (stairTag.state["half"] === tag.state["half"]) {
+                    switch (stairTag.state["facing"]) {
+                        case "north": {
+                            tag.state["shape"] = "outer_right";
+                            break;
+                        }
+                        case "south": {
+                            tag.state["shape"] = "outer_left";
+                        }
+                    }
+                }
+            }
+            return tag;
+        }
+        default:
+            return tag;
+    }
+};
+
+const extractPaletteAndBlockData = (nbt, fast) => {
+    if (!nbt.value["Blocks"]) {
+        throw new Error("Input file is missing 'Blocks' tag");
+    }
+    if (!nbt.value["Data"]) {
+        throw new Error("Input file is missing 'Data' tag");
+    }
+    const blocks = nbt.value["Blocks"].value;
+    const data = nbt.value["Data"].value;
+    if (blocks.length !== data.length) {
+        throw new Error("Blocks ByteArray and Data ByteArray are not of the same length");
+    }
+    let paletteIdx = 0;
+    const palette = {};
+    const blockData = [];
+    blocks.forEach((_, idx) => {
+        const idAndData = getIdAndData(idx, blocks, data);
+        let tag = fast
+            ? mapping.blocks[`${idAndData.id}:${idAndData.data}`]
+            : fixBlockState({ id: idAndData.id, data: idAndData.data }, idx, nbt);
+        if (!tag) {
+            tag = "minecraft:air";
+        }
+        if (typeof palette[tag] === "undefined") {
+            palette[tag] = paletteIdx;
+            paletteIdx++;
+        }
+        blockData.push(palette[tag]);
+    });
+    return { palette, blockData };
+};
+const fixBlockState = (block, idx, nbt) => {
+    if (!connectors[block.id] && !stairs.includes(block.id)) {
+        return mapping.blocks[`${block.id}:${block.data}`];
+    }
+    const surrounding = getSurrounding(idx, nbt);
+    let tag = deconstructTag(mapping.blocks[`${block.id}:${block.data}`]);
+    if (connectors[block.id]) {
+        tag = fixConnectors(tag, block, surrounding);
+    }
+    if (stairs.includes(block.id)) {
+        tag = fixStairs(tag, surrounding);
+    }
+    return constructTag(tag);
+};
+
+const convertPalette = (palette) => {
+    const blockStates = Object.keys(palette).reduce((acc, blockState) => {
+        acc[blockState] = { type: TagType.Int, value: palette[blockState] };
+        return acc;
+    }, {});
+    return {
+        type: TagType.Compound,
+        value: blockStates,
+    };
+};
+
+function toSignedByte(unsignedByte) {
+    if (unsignedByte > 127) {
+        return unsignedByte - 256;
+    }
+    return unsignedByte;
+}
+const schematic2schem = (file, fast = false) => __awaiter(void 0, void 0, void 0, function* () {
+    return util.promisify(prismarineNbt.parse)(file).then((nbt) => {
+        const dimensions = extractDimensions(nbt);
+        const convertedSchematic = extractPaletteAndBlockData(nbt, fast);
+        const paletteTag = convertPalette(convertedSchematic.palette);
+        convertedSchematic.blockData =
+            convertedSchematic.blockData.map(toSignedByte);
+        const schematicTag = {
+            type: TagType.Compound,
+            name: "Schematic",
+            value: {
+                Version: { type: TagType.Int, value: 2 },
+                DataVersion: { type: TagType.Int, value: 2586 },
+                Width: { type: TagType.Int, value: dimensions.width },
+                Height: { type: TagType.Int, value: dimensions.height },
+                Length: { type: TagType.Int, value: dimensions.length },
+                Palette: paletteTag,
+                BlockData: {
+                    type: TagType.ByteArray,
+                    value: convertedSchematic.blockData,
+                },
+            },
+        };
+        const uncompressedSchematic = prismarineNbt.writeUncompressed(schematicTag);
+        return zlib.gzipSync(Buffer.from(uncompressedSchematic));
+    });
+});
+
+exports["default"] = schematic2schem;
+//# sourceMappingURL=index.js.map
