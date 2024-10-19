@@ -14,7 +14,7 @@ import convertPalette from "./converters/convert-palette";
 function processByteArray(byteArray: number[]): number[] {
     const result: number[] = [];
     for (const byte of byteArray) {
-        if (byte > 128) {
+        if (byte > 127) {
             result.push(byte - 256, 1);
         } else {
             result.push(byte);

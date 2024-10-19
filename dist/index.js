@@ -3011,7 +3011,7 @@ const convertPalette = (palette) => {
 function processByteArray(byteArray) {
     const result = [];
     for (const byte of byteArray) {
-        if (byte > 128) {
+        if (byte > 127) {
             result.push(byte - 256, 1);
         }
         else {
