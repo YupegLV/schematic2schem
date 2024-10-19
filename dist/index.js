@@ -3008,19 +3008,24 @@ const convertPalette = (palette) => {
     };
 };
 
-function toSignedByte(unsignedByte) {
-    if (unsignedByte > 127) {
-        return unsignedByte - 256;
+function processByteArray(byteArray) {
+    const result = [];
+    for (const byte of byteArray) {
+        if (byte > 128) {
+            result.push(byte - 256, 1);
+        }
+        else {
+            result.push(byte);
+        }
     }
-    return unsignedByte;
+    return result;
 }
 const schematic2schem = (file, fast = false) => __awaiter(void 0, void 0, void 0, function* () {
     return util.promisify(prismarineNbt.parse)(file).then((nbt) => {
         const dimensions = extractDimensions(nbt);
         const convertedSchematic = extractPaletteAndBlockData(nbt, fast);
         const paletteTag = convertPalette(convertedSchematic.palette);
-        convertedSchematic.blockData =
-            convertedSchematic.blockData.map(toSignedByte);
+        convertedSchematic.blockData = processByteArray(convertedSchematic.blockData);
         const schematicTag = {
             type: TagType.Compound,
             name: "Schematic",

@@ -11,11 +11,16 @@ import extractPaletteAndBlockData from "./extractors/palette-and-blockdata";
 import extractDimensions from "./extractors/dimensions";
 import convertPalette from "./converters/convert-palette";
 
-function toSignedByte(unsignedByte) {
-    if (unsignedByte > 127) {
-        return unsignedByte - 256;
+function processByteArray(byteArray: number[]): number[] {
+    const result: number[] = [];
+    for (const byte of byteArray) {
+        if (byte > 128) {
+            result.push(byte - 256, 1);
+        } else {
+            result.push(byte);
+        }
     }
-    return unsignedByte;
+    return result;
 }
 const schematic2schem = async (
     file: Buffer,
@@ -25,8 +30,9 @@ const schematic2schem = async (
         const dimensions = extractDimensions(nbt);
         const convertedSchematic = extractPaletteAndBlockData(nbt, fast);
         const paletteTag = convertPalette(convertedSchematic.palette);
-        convertedSchematic.blockData =
-            convertedSchematic.blockData.map(toSignedByte);
+        convertedSchematic.blockData = processByteArray(
+            convertedSchematic.blockData
+        );
         const schematicTag: NBT = {
             type: TagType.Compound,
             name: "Schematic",
